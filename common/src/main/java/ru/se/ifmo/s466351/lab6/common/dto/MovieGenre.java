@@ -1,4 +1,4 @@
-package ru.se.ifmo.s466351.lab6.dto;
+package ru.se.ifmo.s466351.lab6.common.dto;
 
 public enum MovieGenre {
     ACTION("Action"),

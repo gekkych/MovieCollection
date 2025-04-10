@@ -1,8 +1,8 @@
-package ru.se.ifmo.s466351.lab6.validation;
+package ru.se.ifmo.s466351.lab6.common.validation;
 
 
-import ru.se.ifmo.s466351.lab6.dto.MovieGenre;
-import ru.se.ifmo.s466351.lab6.exception.MovieFieldNotValidatedException;
+import ru.se.ifmo.s466351.lab6.common.dto.MovieGenre;
+import ru.se.ifmo.s466351.lab6.common.exception.MovieFieldNotValidatedException;
 
 public class MovieValidator {
     public static boolean validateTitle(String title) {

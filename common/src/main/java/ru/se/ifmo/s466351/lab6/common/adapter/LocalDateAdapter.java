@@ -1,4 +1,4 @@
-package ru.se.ifmo.s466351.lab6.adapter;
+package ru.se.ifmo.s466351.lab6.common.adapter;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDate;

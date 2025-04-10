@@ -1,7 +1,7 @@
-package ru.se.ifmo.s466351.lab6.dto;
+package ru.se.ifmo.s466351.lab6.common.dto;
 
 
-import ru.se.ifmo.s466351.lab6.validation.MovieValidator;
+import ru.se.ifmo.s466351.lab6.common.validation.MovieValidator;
 
 public record CoordinateDTO(int x, Double y) {
     public CoordinateDTO {
