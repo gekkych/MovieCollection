@@ -1,7 +1,7 @@
 package ru.se.ifmo.s466351.lab6.server.collection.movie;
 
 import ru.se.ifmo.s466351.lab6.common.dto.CoordinateDTO;
-import ru.se.ifmo.s466351.lab6.common.validation.MovieValidator;
+import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
 public class Coordinates {
     private int x;
@@ -24,9 +24,8 @@ public class Coordinates {
     }
 
     public void setY(Double y) {
-        if (MovieValidator.validateY(y)) {
-            this.y = y;
-        }
+        MovieValidator.validateY(y);
+        this.y = y;
     }
 
     public Double getY() {

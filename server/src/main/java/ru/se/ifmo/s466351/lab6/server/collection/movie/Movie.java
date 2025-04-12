@@ -3,7 +3,7 @@ package ru.se.ifmo.s466351.lab6.server.collection.movie;
 import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.common.dto.MovieGenre;
 import ru.se.ifmo.s466351.lab6.common.dto.MpaaRating;
-import ru.se.ifmo.s466351.lab6.common.validation.MovieValidator;
+import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -93,9 +93,9 @@ public class Movie implements Comparable<Movie> {
     }
 
     public void setTitle(String title) {
-        if (MovieValidator.validateTitle(title)) {
-            this.title = title;
-        }
+        MovieValidator.validateTitle(title);
+        this.title = title;
+
     }
 
     public Coordinates getCoordinates() {
@@ -119,9 +119,9 @@ public class Movie implements Comparable<Movie> {
     }
 
     public void setOscarsCount(int oscarsCount) {
-        if (MovieValidator.validateOscarCount(oscarsCount)) {
-            this.oscarsCount = oscarsCount;
-        }
+        MovieValidator.validateOscarCount(oscarsCount);
+        this.oscarsCount = oscarsCount;
+
     }
 
     public MovieGenre getGenre() {
@@ -169,10 +169,7 @@ public class Movie implements Comparable<Movie> {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("(").append(id).append(")").append(" ")
-                .append(title)
-                .append("   Жанр ").append(getGenre())
-                .append("   Количество Оскаров ").append(oscarsCount);
+        builder.append("(").append(id).append(")").append(" ").append(title).append("   Жанр ").append(getGenre()).append("   Количество Оскаров ").append(oscarsCount);
         if (mpaaRating != null) {
             builder.append("    Возрастное ограничение ").append(mpaaRating);
         }
@@ -196,8 +193,6 @@ public class Movie implements Comparable<Movie> {
     }
 
     public static Movie fromDTO(MovieDTO dto) {
-        return new Movie.MovieBuilder(dto.title(), Coordinates.fromDTO(dto.coordinates()), dto.genre(), dto.oscarCount())
-                .setDirector(Person.fromDTO(dto.director()))
-                .setMpaaRating(dto.rating()).build();
+        return new Movie.MovieBuilder(dto.title(), Coordinates.fromDTO(dto.coordinates()), dto.genre(), dto.oscarCount()).setDirector(Person.fromDTO(dto.director())).setMpaaRating(dto.rating()).build();
     }
 }

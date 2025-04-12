@@ -1,7 +1,7 @@
 package ru.se.ifmo.s466351.lab6.server.collection.movie;
 
 import ru.se.ifmo.s466351.lab6.common.dto.PersonDTO;
-import ru.se.ifmo.s466351.lab6.common.validation.MovieValidator;
+import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -42,9 +42,8 @@ public class Person {
     }
 
     public void setName(String name) {
-        if (MovieValidator.validateDirectorName(name)) {
-            this.name = name;
-        }
+        MovieValidator.validateDirectorName(name);
+        this.name = name;
     }
 
     public void setBirthday(LocalDate birthday) {
@@ -52,15 +51,14 @@ public class Person {
     }
 
     public void setWeight(int weight) {
-        if (MovieValidator.validateDirectorWeight(weight)) {
-            this.weight = weight;
-        }
+        MovieValidator.validateDirectorWeight(weight);
+        this.weight = weight;
     }
 
     public void setHeight(int height) {
-        if (MovieValidator.validateDirectorHeight(height)) {
-            this.height = height;
-        }
+        MovieValidator.validateDirectorHeight(height);
+        this.height = height;
+
     }
 
     @Override
@@ -72,9 +70,7 @@ public class Person {
             return false;
         }
         Person person = (Person) o;
-        return name.equals(person.name) &&
-                height == person.height &&
-                weight == person.weight;
+        return name.equals(person.name) && height == person.height && weight == person.weight;
     }
 
     @Override

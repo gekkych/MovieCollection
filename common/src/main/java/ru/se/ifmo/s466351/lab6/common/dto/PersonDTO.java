@@ -1,6 +1,6 @@
 package ru.se.ifmo.s466351.lab6.common.dto;
 
-import ru.se.ifmo.s466351.lab6.common.validation.MovieValidator;
+import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
 import java.time.LocalDate;
 
