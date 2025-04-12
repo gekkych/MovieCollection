@@ -28,8 +28,10 @@ public class Server {
         Config config = new Config(Paths.get("config.properties"));
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open(); Selector selector = Selector.open()) {
 
-            serverChannel.bind(new InetSocketAddress(config.getConfigHost(), config.getConfigPort()));
             serverChannel.configureBlocking(false);
+            serverChannel.bind(new InetSocketAddress(config.getConfigHost(), config.getConfigPort()));
+
+            System.out.println("Регистрирую канал на OP_CONNECT");
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
             while (true) {

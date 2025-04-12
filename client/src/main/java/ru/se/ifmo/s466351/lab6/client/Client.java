@@ -24,8 +24,8 @@ public class Client {
         SocketChannel socketChannel = SocketChannel.open();
         Config config = new Config(Paths.get("config.properties"));
 
-        socketChannel.connect(new InetSocketAddress(config.getConfigHost(), config.getConfigPort()));
         socketChannel.configureBlocking(false);
+        socketChannel.connect(new InetSocketAddress(config.getConfigHost(), config.getConfigPort()));
         System.out.println("Connected to " + socketChannel.getRemoteAddress());
 
         Selector selector = Selector.open();
@@ -39,6 +39,8 @@ public class Client {
                     handleConnect(key);
                 } else if (key.isReadable()) {
                     handleRead(key);
+                } else if (key.isWritable()) {
+                    handleWrite(key);
                 }
             }
             keys.clear();
@@ -46,18 +48,23 @@ public class Client {
     }
 
     private static void handleConnect(SelectionKey key) throws IOException {
-        InputHandler inputHandler = new InputHandler(scanner);
         SocketChannel channel = (SocketChannel) key.channel();
         if (channel.finishConnect()) {
             System.out.println("Подключено к серверу");
-            ClientCommandRequest request_ = inputHandler.inputCommandRequest();
-            String request = JsonUtils.toJson(request_);
-            buffer.put(request.getBytes(StandardCharsets.UTF_8));
-            buffer.flip();
-            channel.write(buffer);
-            buffer.clear();
-            channel.register(key.selector(), SelectionKey.OP_READ);
+            channel.register(key.selector(), SelectionKey.OP_WRITE);
         }
+    }
+
+    private static void handleWrite(SelectionKey key) throws IOException {
+        SocketChannel channel = (SocketChannel) key.channel();
+        InputHandler inputHandler = new InputHandler(scanner);
+        ClientCommandRequest request_ = inputHandler.inputCommandRequest();
+        String request = JsonUtils.toJson(request_);
+        buffer.put(request.getBytes(StandardCharsets.UTF_8));
+        buffer.flip();
+        channel.write(buffer);
+        buffer.clear();
+        channel.register(key.selector(), SelectionKey.OP_READ);
     }
 
     private static void handleRead(SelectionKey key) throws IOException {
@@ -67,6 +74,7 @@ public class Client {
             buffer.flip();
             ServerResponse response = JsonUtils.fromJson(StandardCharsets.UTF_8.decode(buffer).toString(), ServerResponse.class);
             System.out.println("Ответ сервера: " + response.message());
+            channel.register(key.selector(), SelectionKey.OP_WRITE);
             buffer.clear();
         }
     }

@@ -1,5 +1,6 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
+import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.server.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 
@@ -40,5 +41,9 @@ public class CommandManager {
 
     private void addCommand(Command command) {
         commands.put(command.getName(), command);
+    }
+
+    public Command getCommand(String command) {
+        return commands.get(command);
     }
 }

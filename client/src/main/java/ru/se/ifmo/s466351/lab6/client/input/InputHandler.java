@@ -18,7 +18,7 @@ public class InputHandler {
     public ClientCommandRequest inputCommandRequest() {
         String commandName = null;
         String argument = null;
-        try (scanner) {
+        try {
             System.out.print(GECKO + " > ");
             String[] input = scanner.nextLine().trim().split(" ", 2);
             commandName = input[0];
