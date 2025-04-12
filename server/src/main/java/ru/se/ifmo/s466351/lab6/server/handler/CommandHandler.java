@@ -20,30 +20,28 @@ public class CommandHandler {
         this.commandManager = commandManager;
     }
 
-    public ServerResponse handle(ClientCommandRequest request, SocketChannel channel) {
+    public String handle(ClientCommandRequest request, SocketChannel channel) {
         String commandName = request.command();
         String argument = request.argument();
 
         Command command = commandManager.getCommand(commandName);
 
         if (command == null) {
-            return new ServerResponse(ResponseStatus.ERROR, "Команда \"" + commandName + "\" не найдена.");
+            return null;
         }
 
         if (command instanceof MovieDataReceiver) {
-            PendingRequest.add(channel, request);
-            return new ServerResponse(ResponseStatus.NEED_MOVIE_DATA, "Команда \"" + commandName + "\" требует данные фильма.");
+            return null;
         }
 
         try {
-            String result = command.execute(argument);
-            return new ServerResponse(ResponseStatus.OK, result);
+            return command.execute(argument);
         } catch (RuntimeException e) {
-            return new ServerResponse(ResponseStatus.ERROR, "Ошибка выполнения: " + e.getMessage());
+            return null;
         }
     }
 
-    public ServerResponse handle(MovieDTO movieDTO, SocketChannel channel) {
+    public String handle(MovieDTO movieDTO, SocketChannel channel) {
         ClientCommandRequest originalRequest = PendingRequest.get(channel);
         String commandName = originalRequest.command();
         String argument = originalRequest.argument();
@@ -51,18 +49,17 @@ public class CommandHandler {
         Command command = commandManager.getCommand(commandName);
 
         if (command == null) {
-            return new ServerResponse(ResponseStatus.ERROR, "Команда \"" + commandName + "\" не найдена.");
+            return "Команда не найден";
         }
 
         if (!(command instanceof MovieDataReceiver receiver)) {
-            return new ServerResponse(ResponseStatus.ERROR, "Команда \"" + commandName + "\" не принимает данные фильма.");
+            return null;
         }
 
         try {
-            String result = receiver.execute(argument, movieDTO);
-            return new ServerResponse(ResponseStatus.OK, result);
+            return receiver.execute(argument, movieDTO);
         } catch (RuntimeException e) {
-            return new ServerResponse(ResponseStatus.ERROR, "Ошибка выполнения: " + e.getMessage());
+            return null;
         }
     }
 

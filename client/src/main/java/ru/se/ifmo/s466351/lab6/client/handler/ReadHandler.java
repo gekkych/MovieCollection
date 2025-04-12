@@ -29,6 +29,8 @@ public class ReadHandler {
         }
         buffer.flip();
         ServerResponse responseJson = JsonUtils.fromJson(StandardCharsets.UTF_8.decode(buffer).toString(), ServerResponse.class);
+        System.out.println(responseJson.message());
+        buffer.clear();
 
         if (responseJson.status() == ResponseStatus.NEED_MOVIE_DATA) {
             WriteHandler.write(key, new ClientMovieDataRequest(ResponseStatus.OK, MovieFieldInput.inputMovieData()), buffer);

@@ -19,4 +19,9 @@ public class WriteHandler {
         buffer.clear();
         channel.register(key.selector(), SelectionKey.OP_READ);
     }
+
+    public static void writeTest(SelectionKey key, ByteBuffer buffer) throws IOException {
+        SocketChannel channel = (SocketChannel) key.channel();
+        write(key, CommandRequestInput.inputCommandRequest(), buffer);
+    }
 }

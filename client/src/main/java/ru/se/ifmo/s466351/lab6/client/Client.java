@@ -2,6 +2,7 @@ package ru.se.ifmo.s466351.lab6.client;
 
 import ru.se.ifmo.s466351.lab6.client.handler.ConnectionHandler;
 import ru.se.ifmo.s466351.lab6.client.handler.ReadHandler;
+import ru.se.ifmo.s466351.lab6.client.handler.WriteHandler;
 import ru.se.ifmo.s466351.lab6.common.util.Config;
 
 import java.io.IOException;
@@ -37,6 +38,8 @@ public class Client {
                     ConnectionHandler.handleConnect(key);
                 } else if (key.isReadable()) {
                     readHandler.read(key);
+                } else if (key.isWritable()) {
+                    WriteHandler.writeTest(key, buffer);
                 }
                 keys.clear();
             }

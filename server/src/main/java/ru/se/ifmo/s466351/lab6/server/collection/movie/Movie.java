@@ -5,10 +5,15 @@ import ru.se.ifmo.s466351.lab6.common.dto.MovieGenre;
 import ru.se.ifmo.s466351.lab6.common.dto.MpaaRating;
 import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
+@XmlRootElement
+@XmlType(propOrder = {"id", "title", "genre", "mpaaRating", "director", "oscarsCount", "coordinates", "creationDate"})
 public class Movie implements Comparable<Movie> {
     private long id;
     private String title;
@@ -80,6 +85,7 @@ public class Movie implements Comparable<Movie> {
         }
     }
 
+    @XmlElement
     public long getId() {
         return id;
     }
@@ -88,6 +94,7 @@ public class Movie implements Comparable<Movie> {
         this.id = id;
     }
 
+    @XmlElement
     public String getTitle() {
         return title;
     }
@@ -98,6 +105,7 @@ public class Movie implements Comparable<Movie> {
 
     }
 
+    @XmlElement
     public Coordinates getCoordinates() {
         return coordinates;
     }
@@ -114,6 +122,7 @@ public class Movie implements Comparable<Movie> {
         this.creationDate = creationDate;
     }
 
+    @XmlElement
     public int getOscarsCount() {
         return oscarsCount;
     }
@@ -124,6 +133,7 @@ public class Movie implements Comparable<Movie> {
 
     }
 
+    @XmlElement
     public MovieGenre getGenre() {
         return genre;
     }
@@ -133,6 +143,7 @@ public class Movie implements Comparable<Movie> {
         this.genre = genre;
     }
 
+    @XmlElement(nillable = true)
     public MpaaRating getMpaaRating() {
         return mpaaRating;
     }
@@ -141,6 +152,7 @@ public class Movie implements Comparable<Movie> {
         this.mpaaRating = mpaaRating;
     }
 
+    @XmlElement(nillable = true)
     public Person getDirector() {
         return director;
     }

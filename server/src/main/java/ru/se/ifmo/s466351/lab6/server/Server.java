@@ -20,10 +20,13 @@ import java.util.Set;
 public class Server {
     private static final ByteBuffer buffer = ByteBuffer.allocate(8012);
     private static SaveManager saveManager = new SaveManager("save");
-    private static CommandHandler commandHandler = new CommandHandler(new CommandManager(new MovieDeque(), saveManager));
+    private static CommandHandler commandHandler;
+    private static MovieDeque movies;
     private static ReadHandler readHandler = new ReadHandler(buffer, commandHandler);
 
     public static void main(String[] args) throws IOException {
+        movies = saveManager.loadFromXML();
+        commandHandler = new CommandHandler(new CommandManager(movies, saveManager));
         commandHandler.getCommandManager().initialize();
         Config config = new Config(Paths.get("config.properties"));
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open(); Selector selector = Selector.open()) {

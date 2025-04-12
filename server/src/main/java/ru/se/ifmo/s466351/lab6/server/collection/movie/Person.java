@@ -1,11 +1,18 @@
 package ru.se.ifmo.s466351.lab6.server.collection.movie;
 
+import ru.se.ifmo.s466351.lab6.common.adapter.LocalDateAdapter;
 import ru.se.ifmo.s466351.lab6.common.dto.PersonDTO;
 import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@XmlRootElement
+@XmlType(propOrder = {"name", "birthday", "height", "weight"})
 public class Person {
     private String name;
     private LocalDate birthday;
@@ -25,18 +32,23 @@ public class Person {
         setHeight(height);
     }
 
+    @XmlElement
     public String getName() {
         return name;
     }
 
+    @XmlElement(nillable = true, required = false)
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     public LocalDate getBirthday() {
         return birthday;
     }
 
+    @XmlElement
     public int getHeight() {
         return height;
     }
 
+    @XmlElement
     public int getWeight() {
         return weight;
     }

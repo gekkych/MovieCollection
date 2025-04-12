@@ -154,7 +154,6 @@ public class MovieFieldInput {
             }
         }
 
-        boolean birthdayIsValid = false;
         while (true) {
             System.out.println("Введите дату рождения режиссёра в формате \"dd-MM-yyyy:\" (нажмите Enter если хотите оставить поле пустым):");
             System.out.print(GECKO + " > ");

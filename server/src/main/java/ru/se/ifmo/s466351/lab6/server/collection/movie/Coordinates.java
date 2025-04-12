@@ -3,6 +3,12 @@ package ru.se.ifmo.s466351.lab6.server.collection.movie;
 import ru.se.ifmo.s466351.lab6.common.dto.CoordinateDTO;
 import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlRootElement
+@XmlType(propOrder = {"x", "y"})
 public class Coordinates {
     private int x;
     private Double y;
@@ -19,6 +25,7 @@ public class Coordinates {
         this.x = x;
     }
 
+    @XmlElement
     public int getX() {
         return x;
     }
@@ -27,7 +34,7 @@ public class Coordinates {
         MovieValidator.validateY(y);
         this.y = y;
     }
-
+    @XmlElement
     public Double getY() {
         return y;
     }

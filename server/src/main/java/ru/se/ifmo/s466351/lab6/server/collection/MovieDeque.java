@@ -6,12 +6,16 @@ import ru.se.ifmo.s466351.lab6.server.collection.movie.Coordinates;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 import ru.se.ifmo.s466351.lab6.server.exception.IdException;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDate;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 
+@XmlRootElement
 public class MovieDeque {
     private final IdGenerator idGenerator;
     private ArrayDeque<Movie> movies = new ArrayDeque<>();
@@ -73,6 +77,8 @@ public class MovieDeque {
         this.movies = movies;
     }
 
+    @XmlElementWrapper(name = "movies")
+    @XmlElement(name = "movie")
     public ArrayDeque<Movie> getMovies() {
         return movies;
     }
