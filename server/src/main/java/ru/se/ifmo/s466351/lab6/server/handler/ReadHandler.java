@@ -1,8 +1,11 @@
 package ru.se.ifmo.s466351.lab6.server.handler;
 
 import ru.se.ifmo.s466351.lab6.common.request.ClientCommandRequest;
+import ru.se.ifmo.s466351.lab6.common.request.ClientMovieDataRequest;
 import ru.se.ifmo.s466351.lab6.common.request.Request;
 import ru.se.ifmo.s466351.lab6.common.request.RequestType;
+import ru.se.ifmo.s466351.lab6.common.response.ResponseStatus;
+import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.common.util.JsonUtils;
 
 import java.io.IOException;
@@ -35,9 +38,9 @@ public class ReadHandler {
         buffer.clear();
         Request request = JsonUtils.fromJson(requestJson, Request.class);
         if (request.getType() == RequestType.COMMAND) {
-            commandHandler.handle((ClientCommandRequest) request);
+            WriteHandler.send(channel, new ServerResponse(ResponseStatus.OK, commandHandler.handle((ClientCommandRequest) request, channel).message()), buffer);
         } else if (request.getType() == RequestType.MOVIE) {
-            System.out.println("ТЕСТ");
+            WriteHandler.send(channel, new ServerResponse(ResponseStatus.NEED_MOVIE_DATA,commandHandler.handle(((ClientMovieDataRequest) request).movieData(), channel).message()), buffer);
         }
     }
 }

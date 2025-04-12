@@ -1,21 +1,15 @@
-package ru.se.ifmo.s466351.lab6.client.input;
+package ru.se.ifmo.s466351.lab6.client.handler;
 
 import ru.se.ifmo.s466351.lab6.common.request.ClientCommandRequest;
 import ru.se.ifmo.s466351.lab6.common.request.RequestStatus;
-
-import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class InputHandler {
-    private final Scanner scanner;
+public class CommandRequestInput {
+    private static final Scanner scanner = new Scanner(System.in);
     private static final String GECKO = "\uD83E\uDD8E";
 
-    public InputHandler(Scanner scanner) {
-        this.scanner = scanner;
-    }
 
-    public ClientCommandRequest inputCommandRequest() {
+    public static ClientCommandRequest inputCommandRequest() {
         String commandName = null;
         String argument = null;
         try {
@@ -29,16 +23,5 @@ public class InputHandler {
         if (commandName != null && argument != null) {
             return new ClientCommandRequest(RequestStatus.OK, commandName, argument);
         } else return new ClientCommandRequest(RequestStatus.ERROR, commandName, argument);
-    }
-
-    private boolean confirmCommand(String commandName) {
-        try {
-            System.out.println("Вы уверены, что хотите выполнить команду " + commandName + "? (y/n)");
-            System.out.print(GECKO + " > ");
-            String input = scanner.nextLine().trim().toLowerCase();
-            return input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes");
-        } catch (NoSuchElementException e) {
-            return false;
-        }
     }
 }

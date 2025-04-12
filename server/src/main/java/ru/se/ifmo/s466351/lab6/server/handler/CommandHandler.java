@@ -8,6 +8,11 @@ import ru.se.ifmo.s466351.lab6.server.command.Command;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.command.MovieDataReceiver;
 
+import java.nio.channels.Channel;
+import java.nio.channels.SocketChannel;
+import java.util.HashMap;
+import java.util.Map;
+
 public class CommandHandler {
     private final CommandManager commandManager;
 
@@ -15,7 +20,7 @@ public class CommandHandler {
         this.commandManager = commandManager;
     }
 
-    public ServerResponse handle(ClientCommandRequest request) {
+    public ServerResponse handle(ClientCommandRequest request, SocketChannel channel) {
         String commandName = request.command();
         String argument = request.argument();
 
@@ -26,6 +31,7 @@ public class CommandHandler {
         }
 
         if (command instanceof MovieDataReceiver) {
+            PendingRequest.add(channel, request);
             return new ServerResponse(ResponseStatus.NEED_MOVIE_DATA, "Команда \"" + commandName + "\" требует данные фильма.");
         }
 
@@ -37,7 +43,8 @@ public class CommandHandler {
         }
     }
 
-    public ServerResponse handle(ClientCommandRequest originalRequest, MovieDTO movieDTO) {
+    public ServerResponse handle(MovieDTO movieDTO, SocketChannel channel) {
+        ClientCommandRequest originalRequest = PendingRequest.get(channel);
         String commandName = originalRequest.command();
         String argument = originalRequest.argument();
 
@@ -57,5 +64,9 @@ public class CommandHandler {
         } catch (RuntimeException e) {
             return new ServerResponse(ResponseStatus.ERROR, "Ошибка выполнения: " + e.getMessage());
         }
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
     }
 }
