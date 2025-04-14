@@ -4,52 +4,41 @@ import ru.se.ifmo.s466351.lab6.common.exception.ConfigException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Config {
-    private final int PORT;
-    private final String HOST;
-    private final int MAX_RECONNECT_ATTEMPTS;
-    private final int RECONNECT_ATTEMPT_DELAY;
+    private Properties properties;
 
-    public Config(Path configFile) throws ConfigException {
-        Properties properties = new Properties();
+    public Config(Path configPath) throws IOException {
+        properties = new Properties();
 
-        try (FileInputStream in = new FileInputStream(configFile.toFile())) {
-            properties.load(in);
-            HOST = properties.getProperty("HOST", "localhost").trim();
-            String portStr = properties.getProperty("PORT", "5000").trim();
-            String maxReconnectAttemptsStr = properties.getProperty("CLIENT.MAX_RECONNECT_ATTEMPTS", "3").trim();
-            String reconnectAttemptDelayStr = properties.getProperty("CLIENT.RECONNECT_ATTEMPT_DELAY", "2000").trim();
+
+        if (Files.exists(configPath)) {
             try {
-                PORT = Integer.parseInt(portStr);
-                MAX_RECONNECT_ATTEMPTS = Integer.parseInt(maxReconnectAttemptsStr);
-                RECONNECT_ATTEMPT_DELAY = Integer.parseInt(reconnectAttemptDelayStr);
-                if (PORT < 0 || PORT > 65535) {
-                    throw new ConfigException("Порт не находится в пределах 0-65535: " + "[" + portStr + "]");
-                }
-            } catch (NumberFormatException e) {
-                throw new ConfigException("Невалидный формат порта: " + "[" + portStr + "]");
+                properties.load(Files.newInputStream(configPath));
+            } catch (IOException e) {
+                throw new IOException("Ошибка при чтении конфигурационного файла.", e);
             }
-        } catch (IOException e) {
-            throw new ConfigException("Конфиг не найден.");
+        } else {
+            System.out.println("Конфигурационный файл не найден, используются значения по умолчанию.");
+            loadDefaults();
         }
     }
 
+    private void loadDefaults() {
+        properties.setProperty("HOST", "localhost");
+        properties.setProperty("PORT", "8080");
+    }
+
     public String getHost() {
-        return HOST;
+        return properties.getProperty("HOST");
     }
 
     public int getPort() {
-        return PORT;
-    }
-
-    public int getMAX_RECONNECT_ATTEMPTS() {
-        return MAX_RECONNECT_ATTEMPTS;
-    }
-
-    public int getRECONNECT_ATTEMPT_DELAY() {
-        return RECONNECT_ATTEMPT_DELAY;
+        return Integer.parseInt(properties.getProperty("PORT"));
     }
 }
+
