@@ -10,13 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 public class ReadHandler {
-    private final ByteBuffer buffer;
-
-    public ReadHandler(ByteBuffer buffer) {
-        this.buffer = buffer;
-    }
-
-    public ServerResponse read(SelectionKey key) throws IOException {
+    public static ServerResponse read(SelectionKey key, ByteBuffer buffer) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         buffer.clear();
 

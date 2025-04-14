@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Server {
-    private static final ByteBuffer buffer = ByteBuffer.allocate(8012);
     private static final SaveManager saveManager = new SaveManager("save");
 
     public static void main(String[] args) throws IOException {
@@ -37,7 +36,6 @@ public class Server {
         CommandManager commandManager = new CommandManager(movies, saveManager);
         commandManager.initialize();
         RequestRouter requestRouter = new RequestRouter(commandManager);
-        ReadHandler readHandler = new ReadHandler(buffer);
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
         Config config = new Config(Paths.get("config.properties"));
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open(); Selector selector = Selector.open()) {
@@ -48,8 +46,6 @@ public class Server {
             System.out.println("Сервер ждёт подключений");
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-            Request lastRequest;
-            ServerResponse currentResponse = new ServerResponse(ResponseStatus.ERROR, "Неожиданная ошибка");
             while (true) {
                 selector.select(50);
                 if (consoleReader.ready()) {
@@ -68,13 +64,17 @@ public class Server {
                     SelectionKey key = iterator.next();
                     iterator.remove();
                     try {
+                        if (!key.isValid()) {
+                            continue;
+                        }
                         if (key.isAcceptable()) {
                             ConnectionHandler.acceptClient(serverChannel, selector);
                         } else if (key.isReadable()) {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
-                            lastRequest = readHandler.read(key);
-                            if (lastRequest != null) {
-                                currentResponse = requestRouter.route(lastRequest, key);
+                            ClientContext context = (ClientContext) key.attachment();
+                            context.currentRequest = ReadHandler.read(key, context.readBuffer);
+                            if (context.currentRequest != null) {
+                                context.lastResponse = requestRouter.route(context.currentRequest, key);
                                 if (key.isValid()) {
                                     key.interestOps(SelectionKey.OP_WRITE);
                                 }
@@ -83,7 +83,8 @@ public class Server {
                                 clientChannel.close();
                             }
                         } else if (key.isWritable()) {
-                            WriteHandler.send(key, currentResponse, buffer);
+                            ClientContext context = (ClientContext) key.attachment();
+                            WriteHandler.send(key, context.lastResponse, context.writeBuffer);
                             key.interestOps(SelectionKey.OP_READ);
                         }
                     } catch (IOException e) {

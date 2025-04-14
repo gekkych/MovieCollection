@@ -11,13 +11,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 public class ReadHandler {
-    private final ByteBuffer buffer;
-
-    public ReadHandler(ByteBuffer buffer) {
-        this.buffer = buffer;
-    }
-
-    public Request read(SelectionKey key) throws IOException {
+    public static Request read(SelectionKey key, ByteBuffer buffer) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         buffer.clear();
 
