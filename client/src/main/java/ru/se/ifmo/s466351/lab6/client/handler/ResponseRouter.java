@@ -16,9 +16,11 @@ public class ResponseRouter {
         if (response.status() == ResponseStatus.ERROR) throw new ResponseRouterException("Ошибка с сервера: " + response.message());
 
         if(response.status() == ResponseStatus.OK) {
+            System.out.println(response.message());
             return CommandRequestInput.inputCommandRequest();
         }
         if (response.status() == ResponseStatus.NEED_MOVIE_DATA) {
+            System.out.println(response.message());
             MovieDTO movie = MovieFieldInput.inputMovieData();
             return new ClientMovieDataRequest(RequestStatus.OK, movie);
         }

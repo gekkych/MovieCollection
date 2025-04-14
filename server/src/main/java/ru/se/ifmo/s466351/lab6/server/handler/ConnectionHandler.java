@@ -6,8 +6,9 @@ import java.nio.channels.*;
 public class ConnectionHandler {
     public static void acceptClient(ServerSocketChannel serverChannel, Selector selector) throws IOException {
         SocketChannel clientChannel = serverChannel.accept();
-        if (clientChannel == null) return;
+        if (clientChannel == null) return ;
         clientChannel.configureBlocking(false);
+        clientChannel.register(selector, SelectionKey.OP_READ);
         System.out.println("Подключён клиент: " + clientChannel.getRemoteAddress());
     }
 }
