@@ -6,10 +6,11 @@ import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.common.util.Config;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
-import ru.se.ifmo.s466351.lab6.server.exception.ServerException;
 import ru.se.ifmo.s466351.lab6.server.handler.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -30,19 +31,29 @@ public class Server {
         commandManager.initialize();
         RequestRouter requestRouter = new RequestRouter(commandManager);
         ReadHandler readHandler = new ReadHandler(buffer);
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
         Config config = new Config(Paths.get("config.properties"));
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open(); Selector selector = Selector.open()) {
 
             serverChannel.configureBlocking(false);
             serverChannel.bind(new InetSocketAddress(config.getHost(), config.getPort()));
 
-            System.out.println("Регистрирую канал на OP_CONNECT");
+            System.out.println("Сервер ждёт подключений");
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
             Request lastRequest;
             ServerResponse currentResponse = new ServerResponse(ResponseStatus.ERROR, "Неожиданная ошибка");
             while (true) {
-                selector.select();
+                selector.select(50);
+                if (consoleReader.ready()) {
+                    String input = consoleReader.readLine().trim();
+                    if ("save".equalsIgnoreCase(input)) {
+                        System.out.println(commandManager.getCommand("save").execute(null));
+                    } else if ("exit".equalsIgnoreCase(input)) {
+                        shutdown(commandManager, selector, serverChannel);
+                        return;
+                    }
+                }
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iterator = selectedKeys.iterator();
 
@@ -57,7 +68,9 @@ public class Server {
                             lastRequest = readHandler.read(key);
                             if (lastRequest != null) {
                                 currentResponse = requestRouter.route(lastRequest, key);
-                                key.interestOps(SelectionKey.OP_WRITE);
+                                if (key.isValid()) {
+                                    key.interestOps(SelectionKey.OP_WRITE);
+                                }
                             } else {
                                 key.cancel();
                                 clientChannel.close();
@@ -76,6 +89,27 @@ public class Server {
                     }
                 }
             }
+        }
+    }
+
+    private static void shutdown(CommandManager commandManager, Selector selector, ServerSocketChannel serverChannel) {
+        try {
+            System.out.println(commandManager.getCommand("save").execute(null));
+
+            for (SelectionKey key : selector.keys()) {
+                try {
+                    key.channel().close();
+                } catch (IOException e) {
+                    System.out.println("⚠Ошибка при закрытии канала: " + e.getMessage());
+                }
+            }
+
+            selector.close();
+            serverChannel.close();
+
+            System.out.println("Все ресурсы закрыты. Сервер завершил работу.");
+        } catch (IOException e) {
+            System.out.println("Ошибка при завершении сервера: " + e.getMessage());
         }
     }
 }

@@ -25,6 +25,7 @@ public class ReadHandler {
             channel.close();
             return null;
         }
+
         buffer.flip();
         ServerResponse responseJson = JsonUtils.fromJson(StandardCharsets.UTF_8.decode(buffer).toString(), ServerResponse.class);
         buffer.clear();

@@ -4,6 +4,7 @@ import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.common.request.ClientCommandRequest;
 import ru.se.ifmo.s466351.lab6.common.response.ResponseStatus;
 import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
+import ru.se.ifmo.s466351.lab6.server.command.Closable;
 import ru.se.ifmo.s466351.lab6.server.command.Command;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.command.MovieDataReceiver;
@@ -28,6 +29,13 @@ public class CommandHandler {
 
         if (command == null) {
             return new ServerResponse(ResponseStatus.ERROR, "Команда не найдена");
+        }
+
+        if (command instanceof Closable) {
+            SocketChannel channel = (SocketChannel) key.channel();
+            channel.close();
+            key.cancel();
+            return null;
         }
 
         if (command instanceof MovieDataReceiver) {
@@ -66,9 +74,5 @@ public class CommandHandler {
         } catch (RuntimeException e) {
             return new ServerResponse(ResponseStatus.ERROR, e.getMessage());
         }
-    }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
     }
 }

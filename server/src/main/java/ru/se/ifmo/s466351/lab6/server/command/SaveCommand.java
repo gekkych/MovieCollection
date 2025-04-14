@@ -21,7 +21,7 @@ public class SaveCommand extends Command {
 
     @Override
     public String description() {
-        return this.getName() + " - сохранить коллекцию в файл";
+        return this.getName() + " (ТРЕБУЕТСЯ СЕРВЕРНЫЙ ДОСТУП) - сохранить коллекцию в файл";
     }
 }
 

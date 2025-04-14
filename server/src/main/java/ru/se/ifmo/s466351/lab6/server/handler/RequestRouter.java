@@ -19,8 +19,12 @@ public class RequestRouter {
     public ServerResponse route(Request request, SelectionKey key) throws IOException {
         if (request == null) return new ServerResponse(ResponseStatus.ERROR, "Пустой запрос");
         if (request.getStatus() == RequestStatus.ERROR) return new ServerResponse(ResponseStatus.OK, "Запрос с ошибкой проигнорирован");
+        if (request.getStatus() == RequestStatus.PING) return new ServerResponse(ResponseStatus.OK, "Успешное подключение");
 
         if (request instanceof ClientCommandRequest) {
+            if (((ClientCommandRequest) request).command().equalsIgnoreCase("save")) {
+                return new ServerResponse(ResponseStatus.ERROR, "Команда \"save\" недоступна пользователю");
+            }
             return commandHandler.handle((ClientCommandRequest) request, key);
         }
         if (request instanceof ClientMovieDataRequest) {
