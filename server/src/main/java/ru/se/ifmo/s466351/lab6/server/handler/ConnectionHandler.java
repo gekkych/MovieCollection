@@ -8,7 +8,6 @@ public class ConnectionHandler {
         SocketChannel clientChannel = serverChannel.accept();
         if (clientChannel == null) return;
         clientChannel.configureBlocking(false);
-        clientChannel.register(selector, SelectionKey.OP_READ);
         System.out.println("Подключён клиент: " + clientChannel.getRemoteAddress());
     }
 }

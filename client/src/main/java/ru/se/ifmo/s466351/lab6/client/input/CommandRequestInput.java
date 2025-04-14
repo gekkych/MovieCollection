@@ -1,4 +1,4 @@
-package ru.se.ifmo.s466351.lab6.client.handler;
+package ru.se.ifmo.s466351.lab6.client.input;
 
 import ru.se.ifmo.s466351.lab6.common.request.ClientCommandRequest;
 import ru.se.ifmo.s466351.lab6.common.request.RequestStatus;

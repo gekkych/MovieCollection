@@ -8,10 +8,9 @@ import ru.se.ifmo.s466351.lab6.server.command.Command;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.command.MovieDataReceiver;
 
-import java.nio.channels.Channel;
+import java.io.IOException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CommandHandler {
     private final CommandManager commandManager;
@@ -20,36 +19,41 @@ public class CommandHandler {
         this.commandManager = commandManager;
     }
 
-    public String handle(ClientCommandRequest request, SocketChannel channel) {
+    public ServerResponse handle(ClientCommandRequest request, SelectionKey key) throws IOException {
         String commandName = request.command();
         String argument = request.argument();
+        String message = "";
 
         Command command = commandManager.getCommand(commandName);
 
         if (command == null) {
-            return null;
+            return new ServerResponse(ResponseStatus.ERROR, "Команда не найдена");
         }
 
         if (command instanceof MovieDataReceiver) {
-            return null;
+            PendingRequest.add((SocketChannel) key.channel(), request);
+            return new ServerResponse(ResponseStatus.NEED_MOVIE_DATA, "Введите информацию о фильме");
         }
 
         try {
-            return command.execute(argument);
+            message = command.execute(argument);
+            return new ServerResponse(ResponseStatus.OK, message);
         } catch (RuntimeException e) {
-            return null;
+            return new ServerResponse(ResponseStatus.ERROR, e.getMessage());
         }
     }
 
-    public String handle(MovieDTO movieDTO, SocketChannel channel) {
+    public ServerResponse handle(MovieDTO movieDTO, SelectionKey key) throws IOException {
+        SocketChannel channel = (SocketChannel) key.channel();
         ClientCommandRequest originalRequest = PendingRequest.get(channel);
         String commandName = originalRequest.command();
         String argument = originalRequest.argument();
+        String message = "";
 
         Command command = commandManager.getCommand(commandName);
 
         if (command == null) {
-            return "Команда не найден";
+            return new ServerResponse(ResponseStatus.ERROR, "Команда не найдена");
         }
 
         if (!(command instanceof MovieDataReceiver receiver)) {
@@ -57,9 +61,10 @@ public class CommandHandler {
         }
 
         try {
-            return receiver.execute(argument, movieDTO);
+            message = receiver.execute(argument, movieDTO);
+            return new ServerResponse(ResponseStatus.OK, message);
         } catch (RuntimeException e) {
-            return null;
+            return new ServerResponse(ResponseStatus.ERROR, e.getMessage());
         }
     }
 

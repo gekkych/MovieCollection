@@ -6,7 +6,7 @@ import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 
 import java.util.Iterator;
 
-public class RemoveIfLowerCommand extends Command implements Confirmable, MovieDataReceiver {
+public class RemoveIfLowerCommand extends Command implements MovieDataReceiver {
     private final MovieDeque movies;
 
     public RemoveIfLowerCommand(MovieDeque movies) {

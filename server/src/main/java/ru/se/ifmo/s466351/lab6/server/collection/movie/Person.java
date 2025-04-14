@@ -19,6 +19,10 @@ public class Person {
     private int height;
     private int weight;
 
+    public Person() {
+
+    }
+
     public Person(String name, LocalDate birthday, int height, int weight) {
         setName(name);
         setBirthday(birthday);

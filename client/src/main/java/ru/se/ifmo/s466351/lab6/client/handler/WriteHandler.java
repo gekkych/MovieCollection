@@ -1,5 +1,6 @@
 package ru.se.ifmo.s466351.lab6.client.handler;
 
+import ru.se.ifmo.s466351.lab6.client.input.CommandRequestInput;
 import ru.se.ifmo.s466351.lab6.common.request.Request;
 import ru.se.ifmo.s466351.lab6.common.util.JsonUtils;
 
@@ -17,11 +18,5 @@ public class WriteHandler {
         buffer.flip();
         channel.write(buffer);
         buffer.clear();
-        channel.register(key.selector(), SelectionKey.OP_READ);
-    }
-
-    public static void writeTest(SelectionKey key, ByteBuffer buffer) throws IOException {
-        SocketChannel channel = (SocketChannel) key.channel();
-        write(key, CommandRequestInput.inputCommandRequest(), buffer);
     }
 }

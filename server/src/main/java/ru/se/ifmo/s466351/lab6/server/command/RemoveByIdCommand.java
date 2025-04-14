@@ -4,7 +4,7 @@ package ru.se.ifmo.s466351.lab6.server.command;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.exception.InvalidCommandArgumentException;
 
-public class RemoveByIdCommand extends Command implements Confirmable {
+public class RemoveByIdCommand extends Command {
     private final MovieDeque movies;
 
     public RemoveByIdCommand(MovieDeque movies) {

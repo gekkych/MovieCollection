@@ -2,7 +2,7 @@ package ru.se.ifmo.s466351.lab6.server.command;
 
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 
-public class ClearCommand extends Command implements Confirmable {
+public class ClearCommand extends Command {
     private final MovieDeque movies;
 
     public ClearCommand(MovieDeque movies) {

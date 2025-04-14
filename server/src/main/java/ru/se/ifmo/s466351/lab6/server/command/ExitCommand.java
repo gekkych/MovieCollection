@@ -1,6 +1,6 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
-public class ExitCommand extends Command implements Confirmable, Closable {
+public class ExitCommand extends Command implements Closable {
 
     public ExitCommand() {
         super("exit");

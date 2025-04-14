@@ -3,7 +3,7 @@ package ru.se.ifmo.s466351.lab6.server.command;
 import ru.se.ifmo.s466351.lab6.server.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 
-public class SaveCommand extends Command implements Confirmable {
+public class SaveCommand extends Command {
     private final MovieDeque movies;
     private final SaveManager saveManager;
 

@@ -8,19 +8,25 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 public class Config {
-    private final int port;
-    private final String host;
+    private final int PORT;
+    private final String HOST;
+    private final int MAX_RECONNECT_ATTEMPTS;
+    private final int RECONNECT_ATTEMPT_DELAY;
 
     public Config(Path configFile) throws ConfigException {
         Properties properties = new Properties();
 
         try (FileInputStream in = new FileInputStream(configFile.toFile())) {
             properties.load(in);
-            String portStr = properties.getProperty("server.port", "5000").trim();
-            host = properties.getProperty("server.host", "localhost").trim();
+            HOST = properties.getProperty("HOST", "localhost").trim();
+            String portStr = properties.getProperty("PORT", "5000").trim();
+            String maxReconnectAttemptsStr = properties.getProperty("CLIENT.MAX_RECONNECT_ATTEMPTS", "3").trim();
+            String reconnectAttemptDelayStr = properties.getProperty("CLIENT.RECONNECT_ATTEMPT_DELAY", "2000").trim();
             try {
-                port = Integer.parseInt(portStr);
-                if (port < 0 || port > 65535) {
+                PORT = Integer.parseInt(portStr);
+                MAX_RECONNECT_ATTEMPTS = Integer.parseInt(maxReconnectAttemptsStr);
+                RECONNECT_ATTEMPT_DELAY = Integer.parseInt(reconnectAttemptDelayStr);
+                if (PORT < 0 || PORT > 65535) {
                     throw new ConfigException("Порт не находится в пределах 0-65535: " + "[" + portStr + "]");
                 }
             } catch (NumberFormatException e) {
@@ -31,11 +37,19 @@ public class Config {
         }
     }
 
-    public String getConfigHost() {
-        return host;
+    public String getHost() {
+        return HOST;
     }
 
-    public int getConfigPort() {
-        return port;
+    public int getPort() {
+        return PORT;
+    }
+
+    public int getMAX_RECONNECT_ATTEMPTS() {
+        return MAX_RECONNECT_ATTEMPTS;
+    }
+
+    public int getRECONNECT_ATTEMPT_DELAY() {
+        return RECONNECT_ATTEMPT_DELAY;
     }
 }

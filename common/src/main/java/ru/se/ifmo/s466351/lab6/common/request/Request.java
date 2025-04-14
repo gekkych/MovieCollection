@@ -9,7 +9,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(ClientCommandRequest.class),
-        @JsonSubTypes.Type(ClientMovieDataRequest.class)
+        @JsonSubTypes.Type(ClientMovieDataRequest.class),
+        @JsonSubTypes.Type(ClientErrorStatusRequest.class)
 })
 public interface Request {
+    public RequestStatus getStatus();
 }
