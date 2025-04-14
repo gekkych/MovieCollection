@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 public class WriteHandler {
     public static void send(SelectionKey key, ServerResponse response, ByteBuffer buffer) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
+        System.out.println(response + "\n");
         String json = JsonUtils.toJson(response);
         buffer.clear();
         buffer.put(json.getBytes(StandardCharsets.UTF_8));

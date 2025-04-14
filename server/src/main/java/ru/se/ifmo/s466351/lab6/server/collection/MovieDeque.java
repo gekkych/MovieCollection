@@ -27,7 +27,7 @@ public class MovieDeque {
     }
 
     public void add(MovieDTO data) {
-        Movie.MovieBuilder movieBuilder = new Movie.MovieBuilder(data.title(), new Coordinates(data.coordinates().x(), data.coordinates().y()), data.genre(), data.oscarCount()).setId(idGenerator.generateID());
+        Movie.MovieBuilder movieBuilder = new Movie.MovieBuilder(idGenerator.generateID(), data.title(), new Coordinates(data.coordinates().x(), data.coordinates().y()), data.genre(), data.oscarCount());
         if (data.rating() != null) {
             movieBuilder.setMpaaRating(data.rating());
         }

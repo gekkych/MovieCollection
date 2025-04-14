@@ -6,7 +6,7 @@ import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 
 import java.util.ArrayList;
 
-public class GroupByGenreCommand extends Command{
+public class GroupByGenreCommand extends Command {
     MovieDeque movies;
 
     public GroupByGenreCommand(MovieDeque movies) {
@@ -20,14 +20,14 @@ public class GroupByGenreCommand extends Command{
         ArrayList<String> comedyFilms = new ArrayList<>();
         ArrayList<String> scifiFilms = new ArrayList<>();
         StringBuilder result = new StringBuilder();
-        for (Movie movie : movies.getMovies()) {
-            if (movie.getGenre() == null) continue;
+        movies.getMovies().stream().filter(m -> m.getGenre() != null).forEach(movie -> {
             switch (movie.getGenre()) {
                 case ACTION -> actionFilms.add(movie.toString());
                 case COMEDY -> comedyFilms.add(movie.toString());
                 case SCIENCE_FICTION -> scifiFilms.add(movie.toString());
             }
-        }
+        });
+
         if (!actionFilms.isEmpty()) {
             result.append("Боевики: ").append("\n");
             for (String s : actionFilms) {

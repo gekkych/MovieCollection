@@ -57,6 +57,7 @@ public class SaveManager {
             MovieDeque result = (MovieDeque) unmarshaller.unmarshal(stringReader);
             if (result == null) return new MovieDeque();
 
+            result.manageDeque();
             return result;
         } catch (JAXBException | FileNotFoundException e) {
             throw new MovieDequeException("Возможно XML файл повреждён. " + file.getAbsolutePath());

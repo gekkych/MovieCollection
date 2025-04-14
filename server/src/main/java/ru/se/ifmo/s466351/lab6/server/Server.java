@@ -6,6 +6,7 @@ import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.common.util.Config;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
+import ru.se.ifmo.s466351.lab6.server.exception.MovieDequeException;
 import ru.se.ifmo.s466351.lab6.server.handler.*;
 
 import java.io.BufferedReader;
@@ -26,7 +27,13 @@ public class Server {
     private static final SaveManager saveManager = new SaveManager("save");
 
     public static void main(String[] args) throws IOException {
-        MovieDeque movies = saveManager.loadFromXML();
+        MovieDeque movies;
+        try {
+            movies = saveManager.loadFromXML();
+        } catch (MovieDequeException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
         CommandManager commandManager = new CommandManager(movies, saveManager);
         commandManager.initialize();
         RequestRouter requestRouter = new RequestRouter(commandManager);

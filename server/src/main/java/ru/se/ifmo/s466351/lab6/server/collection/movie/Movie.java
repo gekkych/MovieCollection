@@ -48,7 +48,8 @@ public class Movie implements Comparable<Movie> {
         private MpaaRating mpaaRating;
         private Person director;
 
-        public MovieBuilder(String title, Coordinates coordinates, MovieGenre genre, int oscarsCount) {
+        public MovieBuilder(long id, String title, Coordinates coordinates, MovieGenre genre, int oscarsCount) {
+            this.id = id;
             this.title = title;
             this.coordinates = coordinates;
             this.genre = genre;
@@ -72,11 +73,6 @@ public class Movie implements Comparable<Movie> {
 
         public MovieBuilder setDirector(String name, int height, int weight) {
             this.director = new Person(name, height, weight);
-            return this;
-        }
-
-        public MovieBuilder setId(long id) {
-            this.id = id;
             return this;
         }
 
@@ -198,13 +194,5 @@ public class Movie implements Comparable<Movie> {
     @Override
     public int compareTo(Movie other) {
         return Integer.compare(this.getOscarsCount(), other.getOscarsCount());
-    }
-
-    public MovieDTO toDTO() {
-        return new MovieDTO(getTitle(), getCoordinates().toDTO(), getGenre(), getMpaaRating(), getOscarsCount(), getDirector().toDTO());
-    }
-
-    public static Movie fromDTO(MovieDTO dto) {
-        return new Movie.MovieBuilder(dto.title(), Coordinates.fromDTO(dto.coordinates()), dto.genre(), dto.oscarCount()).setDirector(Person.fromDTO(dto.director())).setMpaaRating(dto.rating()).build();
     }
 }

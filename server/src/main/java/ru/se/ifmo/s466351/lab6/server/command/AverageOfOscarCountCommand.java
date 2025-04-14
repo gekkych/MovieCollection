@@ -17,11 +17,10 @@ public class AverageOfOscarCountCommand extends Command {
         if (movies.getMovies().isEmpty()) {
             return "Коллекция фильмов пуста";
         }
-        double oscarSum = 0;
-        for (Movie movie : movies.getMovies()) {
-            oscarSum += movie.getOscarsCount();
-        }
-        double average = oscarSum / movies.getMovies().size();
+        double average = movies.getMovies().stream()
+                .mapToInt(Movie::getOscarsCount)
+                .average()
+                .orElse(0);
         return String.format("Среднее количество оскаров %.2f%n", average);
     }
 
