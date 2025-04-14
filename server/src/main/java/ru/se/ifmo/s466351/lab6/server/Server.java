@@ -50,14 +50,14 @@ public class Server {
                     iterator.remove();
                     if (key.isAcceptable()) {
                         ConnectionHandler.acceptClient(serverChannel, selector);
-                        serverChannel.register(selector, SelectionKey.OP_READ);
+                        serverChannel.register(key.selector(), SelectionKey.OP_READ);
                     } else if (key.isReadable()) {
                         lastRequest = readHandler.read(key);
                         currentResponse = requestRouter.route(lastRequest, key);
-                        serverChannel.register(selector, SelectionKey.OP_WRITE);
+                        serverChannel.register(key.selector(), SelectionKey.OP_WRITE);
                     } else if (key.isWritable()) {
                         WriteHandler.send(key, currentResponse, buffer);
-                        serverChannel.register(selector, SelectionKey.OP_READ);
+                        serverChannel.register(key.selector(), SelectionKey.OP_READ);
                     }
                 }
             }
