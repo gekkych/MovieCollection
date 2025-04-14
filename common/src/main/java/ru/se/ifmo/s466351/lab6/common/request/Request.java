@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.DEDUCTION,
-        defaultImpl = Void.class
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(ClientCommandRequest.class),
-        @JsonSubTypes.Type(ClientMovieDataRequest.class),
-        @JsonSubTypes.Type(ClientStatusRequest.class)
+        @JsonSubTypes.Type(value = ClientStatusRequest.class, name = "status"),
+        @JsonSubTypes.Type(value = ClientCommandRequest.class, name = "command"),
+        @JsonSubTypes.Type(value = ClientMovieDataRequest.class, name = "movie")
 })
 public interface Request {
     public RequestStatus getStatus();

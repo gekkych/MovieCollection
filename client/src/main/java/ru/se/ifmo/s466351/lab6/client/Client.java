@@ -46,14 +46,9 @@ public class Client {
                 for (SelectionKey key : keys) {
                     try {
                         if (key.isConnectable()) {
-                            currentRequest = ConnectionHandler.handleConnect(key);
-                            if (currentRequest != null) {
-                                socketChannel.register(key.selector(), SelectionKey.OP_WRITE);
-                            } else {
-                                System.out.println("Подключение не удалось или сервер не ответил.");
-                                socketChannel.close();
-                                return;
-                            }
+                            ConnectionHandler.handleConnect(key);
+                            currentRequest = new ClientStatusRequest(RequestStatus.PING);
+                            socketChannel.register(key.selector(), SelectionKey.OP_WRITE);
                         } else if (key.isReadable()) {
                             lastResponse = readHandler.read(key);
                             if (lastResponse == null) {

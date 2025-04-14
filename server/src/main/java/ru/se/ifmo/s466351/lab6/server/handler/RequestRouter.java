@@ -1,9 +1,6 @@
 package ru.se.ifmo.s466351.lab6.server.handler;
 
-import ru.se.ifmo.s466351.lab6.common.request.ClientCommandRequest;
-import ru.se.ifmo.s466351.lab6.common.request.ClientMovieDataRequest;
-import ru.se.ifmo.s466351.lab6.common.request.Request;
-import ru.se.ifmo.s466351.lab6.common.request.RequestStatus;
+import ru.se.ifmo.s466351.lab6.common.request.*;
 import ru.se.ifmo.s466351.lab6.common.response.ResponseStatus;
 import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
@@ -18,8 +15,15 @@ public class RequestRouter {
     }
     public ServerResponse route(Request request, SelectionKey key) throws IOException {
         if (request == null) return new ServerResponse(ResponseStatus.ERROR, "Пустой запрос");
-        if (request.getStatus() == RequestStatus.ERROR) return new ServerResponse(ResponseStatus.OK, "Запрос с ошибкой проигнорирован");
-        if (request.getStatus() == RequestStatus.PING) return new ServerResponse(ResponseStatus.OK, "Успешное подключение");
+        System.out.println(request);
+
+        if (request instanceof ClientStatusRequest status) {
+            if (status.getStatus() == RequestStatus.PING) {
+                return new ServerResponse(ResponseStatus.OK, "Успешное подключение");
+            } else if (status.getStatus() == RequestStatus.ERROR) {
+                return new ServerResponse(ResponseStatus.OK, "Запрос с ошибкой проигнорирован");
+            }
+        }
 
         if (request instanceof ClientCommandRequest) {
             if (((ClientCommandRequest) request).command().equalsIgnoreCase("save")) {
