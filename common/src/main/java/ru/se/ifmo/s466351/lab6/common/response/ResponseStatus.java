@@ -4,5 +4,5 @@ public enum ResponseStatus {
     OK,
     ERROR,
     NEED_MOVIE_DATA,
-    NOT_AUTHENTICATED
+    NOT_AUTHENTICATED,
 }

@@ -5,7 +5,6 @@ import ru.se.ifmo.s466351.lab6.common.response.ResponseStatus;
 import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.user.ActiveConnection;
-import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
@@ -14,11 +13,11 @@ import java.nio.channels.SelectionKey;
 
 public class RequestRouter {
     private final CommandHandler commandHandler;
-    private final AuthHandler authHandler;
+    private final LoginHandler loginHandler;
 
     public RequestRouter(CommandManager commandManager, UserCollection users) {
         this.commandHandler = new CommandHandler(commandManager);
-        this.authHandler = new AuthHandler(users, new ActiveConnection());
+        this.loginHandler = new LoginHandler(users, new ActiveConnection());
     }
 
     public ServerResponse route(Request request, SelectionKey key) throws IOException {
@@ -26,11 +25,15 @@ public class RequestRouter {
         System.out.println(request);
         if (!(key.attachment() instanceof ClientContext context)) return new ServerResponse(ResponseStatus.ERROR, "Пустой запрос");
 
-        if (request instanceof ClientAuthenticationRequest auth) {
-            return authHandler.handle(auth, key);
+        if (request instanceof ClientRegistrationRequest reg) {
+            return loginHandler.regHandle(reg, key);
         }
 
-        if (!context.isAuthenticated()) return new ServerResponse(ResponseStatus.NOT_AUTHENTICATED, "Пользователь не аутентифицирован");
+        if (request instanceof ClientAuthenticationRequest auth) {
+            return loginHandler.authHandle(auth, key);
+        }
+
+        if (!context.isAuthenticated()) return new ServerResponse(ResponseStatus.NOT_AUTHENTICATED, "Войдите или зарегистрируйтесь.");
 
         if (request instanceof ClientStatusRequest status) {
             return switch(status.getStatus()) {

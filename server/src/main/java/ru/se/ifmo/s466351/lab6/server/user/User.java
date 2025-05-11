@@ -1,5 +1,6 @@
 package ru.se.ifmo.s466351.lab6.server.user;
 
+import ru.se.ifmo.s466351.lab6.common.util.ClientSaltGenerator;
 import ru.se.ifmo.s466351.lab6.common.util.EncryptionUtils;
 
 import java.util.Objects;
@@ -7,10 +8,16 @@ import java.util.Objects;
 public class User {
     private final String login;
     private final String hashedPassword;
+    private final String userSalt;
 
     public User(String login, String password) {
         this.login = login;
-        this.hashedPassword = EncryptionUtils.sha1Hash(password + "serverSalt");
+        this.userSalt = ClientSaltGenerator.generateSalt();
+        this.hashedPassword = EncryptionUtils.sha1Hash(password + userSalt);
+    }
+
+    public String getUserSalt() {
+        return userSalt;
     }
 
     public String getLogin() {

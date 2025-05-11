@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 public class EncryptionUtils {
     public static String sha1Hash(String input) {
         try {
-            System.out.println("Encryption input: " + input);
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
             byte[] hashBytes = messageDigest.digest(input.getBytes(StandardCharsets.UTF_8));
 
@@ -15,7 +14,6 @@ public class EncryptionUtils {
             for (byte b : hashBytes) {
                 stringBuilder.append(String.format("%02x", b));
             }
-            System.out.println("Encryption output" + stringBuilder);
             return stringBuilder.toString();
 
         } catch (NoSuchAlgorithmException e) {
