@@ -1,13 +1,15 @@
 package ru.se.ifmo.s466351.lab6.server;
 
 import ru.se.ifmo.s466351.lab6.common.request.Request;
-import ru.se.ifmo.s466351.lab6.common.response.ResponseStatus;
 import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.common.util.Config;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.exception.MovieDequeException;
 import ru.se.ifmo.s466351.lab6.server.handler.*;
+import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class Server {
         }
         CommandManager commandManager = new CommandManager(movies, saveManager);
         commandManager.initialize();
-        RequestRouter requestRouter = new RequestRouter(commandManager);
+        RequestRouter requestRouter = new RequestRouter(commandManager, new UserCollection());
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
         Config config = new Config(Paths.get("config.properties"));
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open(); Selector selector = Selector.open()) {
@@ -72,9 +74,16 @@ public class Server {
                         } else if (key.isReadable()) {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
                             ClientContext context = (ClientContext) key.attachment();
-                            context.currentRequest = ReadHandler.read(key, context.readBuffer);
-                            if (context.currentRequest != null) {
-                                context.lastResponse = requestRouter.route(context.currentRequest, key);
+                            ByteBuffer buffer = context.getReadBuffer();
+
+                            Request request = ReadHandler.read(key, buffer);
+                            ServerResponse response = requestRouter.route(request, key);
+
+                            if (request != null) {
+                                context = (ClientContext) key.attachment();
+                                context.setCurrentRequest(request);
+                                context.setLastResponse(response);
+
                                 if (key.isValid()) {
                                     key.interestOps(SelectionKey.OP_WRITE);
                                 }
@@ -84,7 +93,7 @@ public class Server {
                             }
                         } else if (key.isWritable()) {
                             ClientContext context = (ClientContext) key.attachment();
-                            WriteHandler.send(key, context.lastResponse, context.writeBuffer);
+                            WriteHandler.send(key, context.getLastResponse(), context.getWriteBuffer());
                             key.interestOps(SelectionKey.OP_READ);
                         }
                     } catch (IOException e) {
@@ -108,7 +117,7 @@ public class Server {
                 try {
                     key.channel().close();
                 } catch (IOException e) {
-                    System.out.println("⚠Ошибка при закрытии канала: " + e.getMessage());
+                    System.out.println("Ошибка при закрытии канала: " + e.getMessage());
                 }
             }
 

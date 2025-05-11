@@ -1,12 +1,8 @@
 package ru.se.ifmo.s466351.lab6.common.util;
 
-import ru.se.ifmo.s466351.lab6.common.exception.ConfigException;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Config {
