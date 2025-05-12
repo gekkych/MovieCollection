@@ -2,7 +2,6 @@ package ru.se.ifmo.s466351.lab6.server.collection;
 
 
 import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
-import ru.se.ifmo.s466351.lab6.server.collection.movie.Person;
 import ru.se.ifmo.s466351.lab6.server.save.CollectionWrapper;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Coordinates;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
@@ -28,9 +27,8 @@ public class MovieDeque implements CollectionWrapper<Movie> {
         creationDate = LocalDate.now();
     }
 
-    public synchronized  void add(MovieDTO data, String ownerLogin) {
+    public void add(MovieDTO data) {
         Movie.MovieBuilder movieBuilder = new Movie.MovieBuilder(idGenerator.generateID(), data.title(), new Coordinates(data.coordinates().x(), data.coordinates().y()), data.genre(), data.oscarCount());
-        movieBuilder.setOwnerLogin(ownerLogin);
         if (data.rating() != null) {
             movieBuilder.setMpaaRating(data.rating());
         }
@@ -50,7 +48,7 @@ public class MovieDeque implements CollectionWrapper<Movie> {
         sortMovieDeque();
     }
 
-    public synchronized  void removeById(long id) {
+    public void removeById(long id) {
         Iterator<Movie> iterator = movies.iterator();
         while (iterator.hasNext()) {
             Movie movie = iterator.next();
@@ -64,47 +62,12 @@ public class MovieDeque implements CollectionWrapper<Movie> {
         throw new IdException("ID не найден.");
     }
 
-    public synchronized void clear() {
+    public void clear() {
         movies.clear();
         idGenerator.resetId();
     }
 
-    public synchronized boolean updateById(long id, MovieDTO data) {
-        for (Movie movie : movies) {
-            if (movie.getId() == id) {
-                movie.setTitle(data.title());
-                movie.setCoordinates(Coordinates.fromDTO(data.coordinates()));
-                movie.setGenre(data.genre());
-                movie.setMpaaRating(data.rating());
-                movie.setOscarsCount(data.oscarCount());
-                movie.setDirector(Person.fromDTO(data.director()));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public synchronized boolean addIfMax(MovieDTO data, String owner) {
-        for (Movie movie : movies) {
-            if (data.oscarCount() <= movie.getOscarsCount()) {
-                return false;
-            }
-        }
-        add(data, owner); // Предполагается, что у тебя есть add с owner
-        return true;
-    }
-
-    public synchronized boolean addIfMin(MovieDTO data, String owner) {
-        for (Movie movie : movies) {
-            if (data.oscarCount() > movie.getOscarsCount()) {
-                return false;
-            }
-        }
-        add(data, owner);
-        return true;
-    }
-
-    public synchronized  void sortMovieDeque() {
+    public void sortMovieDeque() {
         ArrayList<Movie> movieList = new ArrayList<>(movies);
         movieList.sort(Comparator.comparingLong(Movie::getId));
         movies.clear();
@@ -118,7 +81,7 @@ public class MovieDeque implements CollectionWrapper<Movie> {
     @Override
     @XmlElementWrapper(name = "movies")
     @XmlElement(name = "movie")
-    public synchronized  ArrayDeque<Movie> getCollection() {
+    public ArrayDeque<Movie> getCollection() {
         return movies;
     }
 
@@ -131,7 +94,7 @@ public class MovieDeque implements CollectionWrapper<Movie> {
     }
 
     @Override
-    public synchronized  String toString() {
+    public String toString() {
         return "Тип ArrayDeque" + "\n" + "Дата создания " + creationDate + "\n" + "Количество элементов " + getCollection().size() + "\n";
     }
 }
