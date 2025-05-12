@@ -3,10 +3,10 @@ package ru.se.ifmo.s466351.lab6.server.save;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -30,6 +30,7 @@ public class UserCollectionXmlSerializer implements Serializer<UserCollection>{
     @Override
     public UserCollection deserialize(String string) {
         try {
+            if (string == null || string.isEmpty()) return new UserCollection();
             JAXBContext context = JAXBContext.newInstance(UserCollection.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
 

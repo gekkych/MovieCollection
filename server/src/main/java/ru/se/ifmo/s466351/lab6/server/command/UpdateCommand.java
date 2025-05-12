@@ -7,7 +7,9 @@ import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Person;
 import ru.se.ifmo.s466351.lab6.server.exception.InvalidCommandArgumentException;
 
-public class UpdateCommand extends Command implements MovieDataReceiver {
+import java.nio.channels.SelectionKey;
+
+public class UpdateCommand extends Command implements Receiver<MovieDTO> {
     private final MovieDeque movies;
 
     public UpdateCommand(MovieDeque movies) {
@@ -16,7 +18,7 @@ public class UpdateCommand extends Command implements MovieDataReceiver {
     }
 
     @Override
-    public String execute(String argument, MovieDTO data) {
+    public String execute(String argument, MovieDTO data, SelectionKey key) {
         try {
             long id = Long.parseLong(argument);
             for (Movie movie : movies.getCollection()) {
@@ -38,7 +40,12 @@ public class UpdateCommand extends Command implements MovieDataReceiver {
     }
 
     @Override
-    public String execute(String argument) {
+    public Class<MovieDTO> getType() {
+        return MovieDTO.class;
+    }
+
+    @Override
+    public String execute(String argument, SelectionKey key) {
         return "Нужно использовать execute(String, MovieData)";
     }
 

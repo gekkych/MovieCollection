@@ -3,9 +3,9 @@ package ru.se.ifmo.s466351.lab6.server.collection.movie;
 import ru.se.ifmo.s466351.lab6.common.dto.CoordinateDTO;
 import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlType(propOrder = {"x", "y"})

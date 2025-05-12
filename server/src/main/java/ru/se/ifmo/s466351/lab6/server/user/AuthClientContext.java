@@ -6,6 +6,7 @@ public class AuthClientContext extends ClientContext {
 
     public AuthClientContext(User user) {
         super();
+        setRole(Role.MEMBER);
         this.user = user;
         setAuthenticated(true);
     }

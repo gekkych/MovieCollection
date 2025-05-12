@@ -13,11 +13,9 @@ import java.nio.channels.SelectionKey;
 
 public class RequestRouter {
     private final CommandHandler commandHandler;
-    private final LoginHandler loginHandler;
 
     public RequestRouter(CommandManager commandManager, UserCollection users) {
         this.commandHandler = new CommandHandler(commandManager);
-        this.loginHandler = new LoginHandler(users, new ActiveConnection());
     }
 
     public ServerResponse route(Request request, SelectionKey key) throws IOException {
@@ -25,15 +23,7 @@ public class RequestRouter {
         System.out.println(request);
         if (!(key.attachment() instanceof ClientContext context)) return new ServerResponse(ResponseStatus.ERROR, "Пустой запрос");
 
-        if (request instanceof ClientRegistrationRequest reg) {
-            return loginHandler.regHandle(reg, key);
-        }
-
-        if (request instanceof ClientAuthenticationRequest auth) {
-            return loginHandler.authHandle(auth, key);
-        }
-
-        if (!context.isAuthenticated()) return new ServerResponse(ResponseStatus.NOT_AUTHENTICATED, "Войдите или зарегистрируйтесь.");
+        //if (!context.isAuthenticated()) return new ServerResponse(ResponseStatus.ERROR, "Нет доступа. Войдите или зарегистрируйтесь.");
 
         if (request instanceof ClientStatusRequest status) {
             return switch(status.getStatus()) {
@@ -54,6 +44,11 @@ public class RequestRouter {
         if (request instanceof ClientMovieDataRequest) {
             return commandHandler.handle(((ClientMovieDataRequest) request).movieData(), key);
         }
+
+        if (request instanceof ClientUserDataRequest) {
+            return commandHandler.handle(((ClientUserDataRequest) request).userData(), key);
+        }
+
         return new ServerResponse(ResponseStatus.ERROR, "Неизвестная ошибка");
     }
 }

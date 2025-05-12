@@ -14,7 +14,7 @@ public class ResponseRouter {
            handlers.put(ResponseStatus.OK, new OkResponseHandler());
            handlers.put(ResponseStatus.ERROR, new ErrorResponseHandler());
            handlers.put(ResponseStatus.NEED_MOVIE_DATA, new NeedMovieDataResponseHandler());
-           handlers.put(ResponseStatus.NOT_AUTHENTICATED, new NotAuthenticatedResponseHandler());
+           handlers.put(ResponseStatus.NEED_USER_DATA, new NeedUserDataResponseHandler());
     }
 
     public static Request route(ServerResponse response) {

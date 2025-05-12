@@ -2,17 +2,30 @@ package ru.se.ifmo.s466351.lab6.server.command;
 
 import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+import ru.se.ifmo.s466351.lab6.server.user.ActiveConnection;
+import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
 import java.util.HashMap;
 
 public class CommandManager {
     private final MovieDeque movies;
-    private final SaveManager saveManager;
+    private final SaveManager<MovieDeque> movieSaveManager;
+    private final SaveManager<UserCollection> userSaveManager;
     private final HashMap<String, Command> commands;
+    private final ActiveConnection connection;
+    private final UserCollection userCollection;
 
-    public CommandManager(MovieDeque movies, SaveManager saveManager) {
+
+    public CommandManager(MovieDeque movies,
+                          SaveManager<MovieDeque> movieSaveManager,
+                          SaveManager<UserCollection> userSaveManager,
+                          ActiveConnection connection,
+                          UserCollection userCollection) {
         this.movies = movies;
-        this.saveManager = saveManager;
+        this.movieSaveManager = movieSaveManager;
+        this.userSaveManager = userSaveManager;
+        this.connection = connection;
+        this.userCollection = userCollection;
         this.commands = new HashMap<>();
     }
 
@@ -28,10 +41,12 @@ public class CommandManager {
         addCommand(new InfoCommand(movies));
         addCommand(new RemoveByIdCommand(movies));
         addCommand(new RemoveIfLowerCommand(movies));
-        addCommand(new SaveCommand(movies, saveManager));
+        addCommand(new SaveCommand(movies, movieSaveManager));
         addCommand(new ShowCommand(movies));
         addCommand(new SumOfOscarCountCommand(movies));
         addCommand(new UpdateCommand(movies));
+        addCommand(new LoginCommand(connection, userCollection));
+        addCommand(new RegisterCommand(connection, userCollection));
     }
 
     public boolean containsCommand(String command) {

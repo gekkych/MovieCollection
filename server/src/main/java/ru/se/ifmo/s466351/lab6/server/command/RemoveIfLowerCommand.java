@@ -4,9 +4,10 @@ import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 
+import java.nio.channels.SelectionKey;
 import java.util.Iterator;
 
-public class RemoveIfLowerCommand extends Command implements MovieDataReceiver {
+public class RemoveIfLowerCommand extends Command implements Receiver<MovieDTO> {
     private final MovieDeque movies;
 
     public RemoveIfLowerCommand(MovieDeque movies) {
@@ -15,7 +16,7 @@ public class RemoveIfLowerCommand extends Command implements MovieDataReceiver {
     }
 
     @Override
-    public String execute(String argument, MovieDTO data) {
+    public String execute(String argument, MovieDTO data, SelectionKey key) {
         StringBuilder result = new StringBuilder();
 
         Iterator<Movie> iterator = movies.getCollection().iterator();
@@ -33,7 +34,12 @@ public class RemoveIfLowerCommand extends Command implements MovieDataReceiver {
     }
 
     @Override
-    public String execute(String argument) {
+    public Class<MovieDTO> getType() {
+        return MovieDTO.class;
+    }
+
+    @Override
+    public String execute(String argument, SelectionKey key) {
         return "Нужно использовать execute(String, MovieData)";
     }
 

@@ -3,14 +3,14 @@ package ru.se.ifmo.s466351.lab6.server.user;
 import ru.se.ifmo.s466351.lab6.common.util.ClientSaltGenerator;
 import ru.se.ifmo.s466351.lab6.common.util.EncryptionUtils;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.Objects;
 
 @XmlRootElement
-@XmlType(propOrder = {"login", "password", "salt"})
+@XmlType(propOrder = {"login", "hashedPassword", "userSalt"})
 public class User {
     private String login;
     private String hashedPassword;
@@ -42,7 +42,7 @@ public class User {
         this.hashedPassword = hashedPassword;
     }
 
-    @XmlElementWrapper(name = "salt")
+    @XmlElement(name = "salt")
     public String getUserSalt() {
         return userSalt;
     }

@@ -4,6 +4,8 @@ package ru.se.ifmo.s466351.lab6.server.command;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.exception.InvalidCommandArgumentException;
 
+import java.nio.channels.SelectionKey;
+
 public class RemoveByIdCommand extends Command {
     private final MovieDeque movies;
 
@@ -13,7 +15,7 @@ public class RemoveByIdCommand extends Command {
     }
 
     @Override
-    public String execute(String argument) {
+    public String execute(String argument, SelectionKey key) {
         try {
             long id = Long.parseLong(argument);
             movies.removeById(id);

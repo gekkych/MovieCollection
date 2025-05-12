@@ -4,10 +4,10 @@ import ru.se.ifmo.s466351.lab6.common.adapter.LocalDateAdapter;
 import ru.se.ifmo.s466351.lab6.common.dto.PersonDTO;
 import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.Objects;
 

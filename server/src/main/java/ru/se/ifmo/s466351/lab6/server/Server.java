@@ -10,6 +10,7 @@ import ru.se.ifmo.s466351.lab6.server.handler.*;
 import ru.se.ifmo.s466351.lab6.server.save.MovieDequeXmlSerializer;
 import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.save.UserCollectionXmlSerializer;
+import ru.se.ifmo.s466351.lab6.server.user.ActiveConnection;
 import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
@@ -29,16 +30,21 @@ import java.util.Set;
 public class Server {
     private static final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(),"save");
     private static final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(),"users");
+    private static UserCollection userCollection;
+    private static final ActiveConnection connection = new ActiveConnection();
+
 
     public static void main(String[] args) throws IOException {
         MovieDeque movies;
         try {
             movies = movieSaveManager.load();
+            userCollection = userSaveManager.load();
         } catch (MovieDequeException e) {
             System.out.println(e.getMessage());
             return;
         }
-        CommandManager commandManager = new CommandManager(movies, movieSaveManager);
+
+        CommandManager commandManager = new CommandManager(movies, movieSaveManager, userSaveManager, connection, userCollection);
         commandManager.initialize();
         RequestRouter requestRouter = new RequestRouter(commandManager, new UserCollection());
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
@@ -56,7 +62,7 @@ public class Server {
                 if (consoleReader.ready()) {
                     String input = consoleReader.readLine().trim();
                     if ("save".equalsIgnoreCase(input)) {
-                        System.out.println(commandManager.getCommand("save").execute(null));
+                        System.out.println(commandManager.getCommand("save").execute(null, null));
                     } else if ("exit".equalsIgnoreCase(input)) {
                         shutdown(commandManager, selector, serverChannel);
                         return;
@@ -114,7 +120,8 @@ public class Server {
 
     private static void shutdown(CommandManager commandManager, Selector selector, ServerSocketChannel serverChannel) {
         try {
-            System.out.println(commandManager.getCommand("save").execute(null));
+            System.out.println(commandManager.getCommand("save").execute(null, null));
+            userSaveManager.save(userCollection);
 
             for (SelectionKey key : selector.keys()) {
                 try {

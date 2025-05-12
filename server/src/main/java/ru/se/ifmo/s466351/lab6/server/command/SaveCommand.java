@@ -1,8 +1,9 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
-import ru.se.ifmo.s466351.lab6.server.save.MovieDequeXmlSerializer;
 import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+
+import java.nio.channels.SelectionKey;
 
 public class SaveCommand extends Command {
     private final MovieDeque movies;
@@ -15,7 +16,7 @@ public class SaveCommand extends Command {
     }
 
     @Override
-    public String execute(String argument) {
+    public String execute(String argument, SelectionKey key) {
         saveManager.save(movies);
         return "Коллекция сохранена в файл " + saveManager.getFileManager().getFilePath();
     }

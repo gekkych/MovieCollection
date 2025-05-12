@@ -11,6 +11,7 @@ public abstract class ClientContext {
     private Request currentRequest;
     private ServerResponse lastResponse;
     private boolean isAuthenticated = false;
+    private Role role = Role.GUEST;
 
     public ClientContext() {
         readBuffer = ByteBuffer.allocate(4096);
@@ -47,5 +48,13 @@ public abstract class ClientContext {
 
     public boolean isAuthenticated() {
         return isAuthenticated;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

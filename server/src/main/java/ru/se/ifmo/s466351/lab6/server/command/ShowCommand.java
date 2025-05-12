@@ -3,6 +3,8 @@ package ru.se.ifmo.s466351.lab6.server.command;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 
+import java.nio.channels.SelectionKey;
+
 public class ShowCommand extends Command {
     MovieDeque movieDeque;
 
@@ -12,7 +14,7 @@ public class ShowCommand extends Command {
     }
 
     @Override
-    public String execute(String argument) {
+    public String execute(String argument, SelectionKey key) {
         StringBuilder result = new StringBuilder();
         if (movieDeque.getCollection().isEmpty()) {
             return "Пустая коллекция";

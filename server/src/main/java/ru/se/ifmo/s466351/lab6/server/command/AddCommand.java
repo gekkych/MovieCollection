@@ -4,7 +4,9 @@ package ru.se.ifmo.s466351.lab6.server.command;
 import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 
-public class AddCommand extends Command implements MovieDataReceiver {
+import java.nio.channels.SelectionKey;
+
+public class AddCommand extends Command implements Receiver<MovieDTO> {
     private final MovieDeque movies;
 
     public AddCommand(MovieDeque movies) {
@@ -13,13 +15,18 @@ public class AddCommand extends Command implements MovieDataReceiver {
     }
 
     @Override
-    public String execute(String argument, MovieDTO data) {
+    public String execute(String argument, MovieDTO data, SelectionKey key) {
         movies.add(data);
         return "Фильм успешно добавлен в коллекцию.";
     }
 
     @Override
-    public String execute(String argument) {
+    public Class<MovieDTO> getType() {
+        return MovieDTO.class;
+    }
+
+    @Override
+    public String execute(String argument, SelectionKey key) {
         return "Нужно использовать execute(String, MovieData)";
     }
 

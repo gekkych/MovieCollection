@@ -3,6 +3,7 @@ package ru.se.ifmo.s466351.lab6.server.command;
 
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 
+import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 
 public class GroupByGenreCommand extends Command {
@@ -14,7 +15,7 @@ public class GroupByGenreCommand extends Command {
     }
 
     @Override
-    public String execute(String argument) {
+    public String execute(String argument, SelectionKey key) {
         ArrayList<String> actionFilms = new ArrayList<>();
         ArrayList<String> comedyFilms = new ArrayList<>();
         ArrayList<String> scifiFilms = new ArrayList<>();

@@ -12,9 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ClientStatusRequest.class, name = "status"),
         @JsonSubTypes.Type(value = ClientCommandRequest.class, name = "command"),
         @JsonSubTypes.Type(value = ClientMovieDataRequest.class, name = "movie"),
-        @JsonSubTypes.Type(value = ClientLoginOptionRequest.class, name = "loginOption"),
-        @JsonSubTypes.Type(value = ClientAuthenticationRequest.class, name = "auth"),
-        @JsonSubTypes.Type(value = ClientRegistrationRequest.class, name = "reg")
+        @JsonSubTypes.Type(value = ClientUserDataRequest.class, name = "user")
 })
 public interface Request {
     RequestStatus getStatus();
