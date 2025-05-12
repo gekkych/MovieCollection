@@ -2,6 +2,7 @@ package ru.se.ifmo.s466351.lab6.server.collection;
 
 
 import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
+import ru.se.ifmo.s466351.lab6.server.save.CollectionWrapper;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Coordinates;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 import ru.se.ifmo.s466351.lab6.server.exception.IdException;
@@ -16,7 +17,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 @XmlRootElement
-public class MovieDeque {
+public class MovieDeque implements CollectionWrapper<Movie> {
     private final IdGenerator idGenerator;
     private ArrayDeque<Movie> movies = new ArrayDeque<>();
     private LocalDate creationDate;
@@ -77,9 +78,10 @@ public class MovieDeque {
         this.movies = movies;
     }
 
+    @Override
     @XmlElementWrapper(name = "movies")
     @XmlElement(name = "movie")
-    public ArrayDeque<Movie> getMovies() {
+    public ArrayDeque<Movie> getCollection() {
         return movies;
     }
 
@@ -93,6 +95,6 @@ public class MovieDeque {
 
     @Override
     public String toString() {
-        return "Тип ArrayDeque" + "\n" + "Дата создания " + creationDate + "\n" + "Количество элементов " + getMovies().size() + "\n";
+        return "Тип ArrayDeque" + "\n" + "Дата создания " + creationDate + "\n" + "Количество элементов " + getCollection().size() + "\n";
     }
 }

@@ -14,4 +14,8 @@ public class ActiveConnection {
         key.attach(authClientContext);
         connections.put(authClientContext, key);
     }
+
+    public boolean contains(AuthClientContext authClientContext) {
+        return connections.containsKey(authClientContext);
+    }
 }

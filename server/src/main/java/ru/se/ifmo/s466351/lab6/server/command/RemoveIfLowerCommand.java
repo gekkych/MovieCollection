@@ -18,7 +18,7 @@ public class RemoveIfLowerCommand extends Command implements MovieDataReceiver {
     public String execute(String argument, MovieDTO data) {
         StringBuilder result = new StringBuilder();
 
-        Iterator<Movie> iterator = movies.getMovies().iterator();
+        Iterator<Movie> iterator = movies.getCollection().iterator();
         while (iterator.hasNext()) {
             Movie movie = iterator.next();
             if (data.oscarCount() > movie.getOscarsCount()) {

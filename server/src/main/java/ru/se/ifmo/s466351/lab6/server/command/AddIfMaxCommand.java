@@ -14,7 +14,7 @@ public class AddIfMaxCommand extends Command implements MovieDataReceiver {
 
     @Override
     public String execute(String argument, MovieDTO data) {
-        for(Movie movie : movies.getMovies()) {
+        for(Movie movie : movies.getCollection()) {
             if (data.oscarCount() <= movie.getOscarsCount()) {
                 throw new MovieCannotBeAddedException("значение oscarCount не максимально.");
             }

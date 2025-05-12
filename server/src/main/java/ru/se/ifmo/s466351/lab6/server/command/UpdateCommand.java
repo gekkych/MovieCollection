@@ -19,7 +19,7 @@ public class UpdateCommand extends Command implements MovieDataReceiver {
     public String execute(String argument, MovieDTO data) {
         try {
             long id = Long.parseLong(argument);
-            for (Movie movie : movies.getMovies()) {
+            for (Movie movie : movies.getCollection()) {
                 if (movie.getId() == id) {
                     movie.setTitle(data.title());
                     movie.setCoordinates(Coordinates.fromDTO(data.coordinates()));

@@ -1,0 +1,42 @@
+package ru.se.ifmo.s466351.lab6.server.save;
+
+import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+public class UserCollectionXmlSerializer implements Serializer<UserCollection>{
+
+    @Override
+    public String serialize(UserCollection collectionWrapper) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(UserCollection.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(collectionWrapper, writer);
+            return writer.toString();
+        } catch (JAXBException e) {
+            throw new RuntimeException("Ошибка сериализации в XML", e);
+        }
+    }
+
+    @Override
+    public UserCollection deserialize(String string) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(UserCollection.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+
+            StringReader reader = new StringReader(string);
+            return (UserCollection) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            throw new RuntimeException("Ошибка десериализации из XML", e);
+        }
+    }
+}

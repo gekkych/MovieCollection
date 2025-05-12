@@ -7,7 +7,9 @@ import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.exception.MovieDequeException;
 import ru.se.ifmo.s466351.lab6.server.handler.*;
-import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.save.MovieDequeXmlSerializer;
+import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
+import ru.se.ifmo.s466351.lab6.server.save.UserCollectionXmlSerializer;
 import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
@@ -25,17 +27,18 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Server {
-    private static final SaveManager saveManager = new SaveManager("save");
+    private static final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(),"save");
+    private static final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(),"users");
 
     public static void main(String[] args) throws IOException {
         MovieDeque movies;
         try {
-            movies = saveManager.loadFromXML();
+            movies = movieSaveManager.load();
         } catch (MovieDequeException e) {
             System.out.println(e.getMessage());
             return;
         }
-        CommandManager commandManager = new CommandManager(movies, saveManager);
+        CommandManager commandManager = new CommandManager(movies, movieSaveManager);
         commandManager.initialize();
         RequestRouter requestRouter = new RequestRouter(commandManager, new UserCollection());
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));

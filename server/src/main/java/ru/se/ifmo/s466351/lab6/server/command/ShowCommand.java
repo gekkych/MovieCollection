@@ -14,10 +14,10 @@ public class ShowCommand extends Command {
     @Override
     public String execute(String argument) {
         StringBuilder result = new StringBuilder();
-        if (movieDeque.getMovies().isEmpty()) {
+        if (movieDeque.getCollection().isEmpty()) {
             return "Пустая коллекция";
         }
-        for(Movie movie : movieDeque.getMovies()) {
+        for(Movie movie : movieDeque.getCollection()) {
             result.append(movie.toString()).append("\n");
         }
         return result.toString();

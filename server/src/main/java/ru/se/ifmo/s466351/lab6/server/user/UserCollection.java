@@ -1,28 +1,39 @@
 package ru.se.ifmo.s466351.lab6.server.user;
 
+import ru.se.ifmo.s466351.lab6.server.save.CollectionWrapper;
 import ru.se.ifmo.s466351.lab6.server.exception.UserCannotBeAdded;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashSet;
 
-public class UserCollection {
-    private final HashSet<AuthClientContext> users;
+@XmlRootElement
+public class UserCollection implements CollectionWrapper<User> {
+    private HashSet<User> users;
 
     public UserCollection() {
         this.users = new HashSet<>();
-        users.add(new AuthClientContext(new User("admin", "0")));
     }
 
-    public void add(AuthClientContext context) throws UserCannotBeAdded {
-        if (context.getUser() == null || context.getUser().getLogin() == null || context.getUser().getHashedPassword() == null) {
+    public void add(User user) throws UserCannotBeAdded {
+        if (user == null || user.getLogin() == null || user.getHashedPassword() == null) {
             throw new UserCannotBeAdded("Неполная информация о пользователе.");
         }
-        if (users.contains(context)) {
+        if (users.contains(user)) {
             throw new UserCannotBeAdded("Логин уже занят.");
         }
-        users.add(context);
+        users.add(user);
     }
 
-    public HashSet<AuthClientContext> getUsers() {
+    public void setUsers(HashSet<User> users) {
+        this.users = users;
+    }
+
+    @Override
+    @XmlElementWrapper(name = "users")
+    @XmlElement(name = "user")
+    public HashSet<User> getCollection() {
         return users;
     }
 }

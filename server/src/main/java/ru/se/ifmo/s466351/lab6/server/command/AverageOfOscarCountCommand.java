@@ -14,10 +14,10 @@ public class AverageOfOscarCountCommand extends Command {
 
     @Override
     public String execute(String argument) {
-        if (movies.getMovies().isEmpty()) {
+        if (movies.getCollection().isEmpty()) {
             return "Коллекция фильмов пуста";
         }
-        double average = movies.getMovies().stream()
+        double average = movies.getCollection().stream()
                 .mapToInt(Movie::getOscarsCount)
                 .average()
                 .orElse(0);

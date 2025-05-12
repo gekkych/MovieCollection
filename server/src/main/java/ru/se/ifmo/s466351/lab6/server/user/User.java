@@ -3,12 +3,20 @@ package ru.se.ifmo.s466351.lab6.server.user;
 import ru.se.ifmo.s466351.lab6.common.util.ClientSaltGenerator;
 import ru.se.ifmo.s466351.lab6.common.util.EncryptionUtils;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
 
+@XmlRootElement
+@XmlType(propOrder = {"login", "password", "salt"})
 public class User {
-    private final String login;
-    private final String hashedPassword;
-    private final String userSalt;
+    private String login;
+    private String hashedPassword;
+    private String userSalt;
+
+    private User() {}
 
     public User(String login, String password) {
         this.login = login;
@@ -16,16 +24,31 @@ public class User {
         this.hashedPassword = EncryptionUtils.sha1Hash(password + userSalt);
     }
 
-    public String getUserSalt() {
-        return userSalt;
-    }
-
+    @XmlElement(name = "login")
     public String getLogin() {
         return login;
     }
 
+    private void setLogin(String login) {
+        this.login = login;
+    }
+
+    @XmlElement(name = "password")
     public String getHashedPassword() {
         return hashedPassword;
+    }
+
+    private void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
+    }
+
+    @XmlElementWrapper(name = "salt")
+    public String getUserSalt() {
+        return userSalt;
+    }
+
+    private void setUserSalt(String userSalt) {
+        this.userSalt = userSalt;
     }
 
     @Override

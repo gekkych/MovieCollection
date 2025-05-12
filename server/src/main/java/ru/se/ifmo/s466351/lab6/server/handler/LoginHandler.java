@@ -24,12 +24,12 @@ public class LoginHandler {
         this.activeConnection = activeConnection;
     }
 
-    public ServerResponse authHandle(ClientAuthenticationRequest request, SelectionKey key) throws IOException {
+    public ServerResponse authHandle(ClientAuthenticationRequest request, SelectionKey key) {
 
-        for (AuthClientContext authClientContext : users.getUsers()) {
-            if (request.login().equals(authClientContext.getUser().getLogin())) {
-                if (EncryptionUtils.sha1Hash(request.password() + authClientContext.getUser().getUserSalt()).equals(authClientContext.getUser().getHashedPassword())) {
-                    activeConnection.connect(authClientContext, key);
+        for (User user : users.getCollection()) {
+            if (request.login().equals(user.getLogin())) {
+                if (EncryptionUtils.sha1Hash(request.password() + user.getUserSalt()).equals(user.getHashedPassword())) {
+                    activeConnection.connect(new AuthClientContext(user), key);
                     return new ServerResponse(ResponseStatus.OK, "успешная авторизация");
                 }
             }
@@ -40,7 +40,7 @@ public class LoginHandler {
     public ServerResponse regHandle(ClientRegistrationRequest request, SelectionKey key) throws IOException {
         try {
             AuthClientContext authClientContext = new AuthClientContext(new User(request.login(), request.password()));
-            users.add(authClientContext);
+            users.add(authClientContext.getUser());
             activeConnection.connect(authClientContext, key);
             return new ServerResponse(ResponseStatus.OK, "Пользователь успешно зарегистрирован");
         } catch (UserCannotBeAdded e) {

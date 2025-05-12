@@ -13,7 +13,7 @@ public class SumOfOscarCountCommand extends Command{
 
     @Override
     public String execute(String argument) {
-        int oscarSum = movies.getMovies().stream()
+        int oscarSum = movies.getCollection().stream()
                 .mapToInt(Movie::getOscarsCount)
                 .sum();
         return "Сумма всех оскаров " + oscarSum;

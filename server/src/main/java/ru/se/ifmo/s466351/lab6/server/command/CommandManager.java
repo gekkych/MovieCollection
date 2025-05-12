@@ -1,7 +1,6 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
-import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
-import ru.se.ifmo.s466351.lab6.server.SaveManager;
+import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 
 import java.util.HashMap;

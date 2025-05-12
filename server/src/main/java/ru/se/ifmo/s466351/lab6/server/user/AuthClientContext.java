@@ -1,7 +1,5 @@
 package ru.se.ifmo.s466351.lab6.server.user;
 
-import ru.se.ifmo.s466351.lab6.common.util.ClientSaltGenerator;
-
 
 public class AuthClientContext extends ClientContext {
     private final User user;
