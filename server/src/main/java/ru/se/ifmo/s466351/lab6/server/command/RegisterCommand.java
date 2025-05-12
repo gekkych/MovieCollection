@@ -29,6 +29,10 @@ public class RegisterCommand extends Command implements Receiver<UserDTO> {
 
     @Override
     public String execute(String argument, UserDTO user, SelectionKey key) {
+        ClientContext context = (ClientContext) key.attachment();
+        if (context.isAuthenticated()) {
+            return "Пользователь уже авторизован";
+        }
         try {
             AuthClientContext authClientContext = new AuthClientContext(new User(user.login(), user.password()));
             users.add(authClientContext.getUser());

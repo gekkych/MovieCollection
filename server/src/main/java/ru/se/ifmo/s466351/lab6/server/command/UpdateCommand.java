@@ -6,6 +6,8 @@ import ru.se.ifmo.s466351.lab6.server.collection.movie.Coordinates;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Person;
 import ru.se.ifmo.s466351.lab6.server.exception.InvalidCommandArgumentException;
+import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.Role;
 
 import java.nio.channels.SelectionKey;
 
@@ -19,21 +21,24 @@ public class UpdateCommand extends Command implements Receiver<MovieDTO> {
 
     @Override
     public String execute(String argument, MovieDTO data, SelectionKey key) {
+        AuthClientContext context = (AuthClientContext) key.attachment();
         try {
             long id = Long.parseLong(argument);
-            for (Movie movie : movies.getCollection()) {
-                if (movie.getId() == id) {
-                    movie.setTitle(data.title());
-                    movie.setCoordinates(Coordinates.fromDTO(data.coordinates()));
-                    movie.setGenre(data.genre());
-                    movie.setMpaaRating(data.rating());
-                    movie.setOscarsCount(data.oscarCount());
-                    movie.setDirector(Person.fromDTO(data.director()));
-
-                    return "Фильм успешно обновлён";
-                }
+            Movie movie = movies.getById(id);
+            if (movie == null) {
+                return "ID не найден";
             }
-            return "ID не найден";
+            if (!context.getRole().hasAccess(Role.ADMIN) && !movie.getOwnerLogin().equals(context.getUser().getLogin())) {
+                return "Нет доступа к фильму";
+            }
+            movie.setTitle(data.title());
+            movie.setCoordinates(Coordinates.fromDTO(data.coordinates()));
+            movie.setGenre(data.genre());
+            movie.setMpaaRating(data.rating());
+            movie.setOscarsCount(data.oscarCount());
+            movie.setDirector(Person.fromDTO(data.director()));
+
+            return "Фильм успешно обновлён";
         } catch (NumberFormatException e) {
             throw new InvalidCommandArgumentException("неверный формат id");
         }

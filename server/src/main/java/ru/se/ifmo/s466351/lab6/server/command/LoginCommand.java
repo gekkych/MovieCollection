@@ -24,6 +24,11 @@ public class LoginCommand extends Command implements Receiver<UserDTO> {
 
     @Override
     public String execute(String argument, UserDTO user, SelectionKey key) {
+        ClientContext context = (ClientContext) key.attachment();
+        if (context.isAuthenticated()) {
+            return "Пользователь уже авторизован";
+        }
+
         for (User other : users.getCollection()) {
             if (user.login().equals(other.getLogin())) {
                 if (EncryptionUtils.sha1Hash(user.password() + other.getUserSalt()).equals(other.getHashedPassword())) {

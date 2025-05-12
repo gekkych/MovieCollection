@@ -27,8 +27,9 @@ public class MovieDeque implements CollectionWrapper<Movie> {
         creationDate = LocalDate.now();
     }
 
-    public void add(MovieDTO data) {
+    public void add(MovieDTO data, String ownerLogin) {
         Movie.MovieBuilder movieBuilder = new Movie.MovieBuilder(idGenerator.generateID(), data.title(), new Coordinates(data.coordinates().x(), data.coordinates().y()), data.genre(), data.oscarCount());
+        movieBuilder.setOwnerLogin(ownerLogin);
         if (data.rating() != null) {
             movieBuilder.setMpaaRating(data.rating());
         }
@@ -41,6 +42,10 @@ public class MovieDeque implements CollectionWrapper<Movie> {
         }
         movies.add(movieBuilder.build());
         sortMovieDeque();
+    }
+
+    public Movie getById(long id) {
+        return movies.stream().filter(movie -> movie.getId() == id).findFirst().orElse(null);
     }
 
     public void manageDeque() {

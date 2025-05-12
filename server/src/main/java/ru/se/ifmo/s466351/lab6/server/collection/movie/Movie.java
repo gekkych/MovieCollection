@@ -13,30 +13,29 @@ import java.util.Date;
 import java.util.Objects;
 
 @XmlRootElement
-@XmlType(propOrder = {"id", "title", "genre", "mpaaRating", "director", "oscarsCount", "coordinates", "creationDate"})
+@XmlType(propOrder = {"id", "title", "genre", "mpaaRating", "director", "oscarsCount", "coordinates", "ownerLogin"})
 public class Movie implements Comparable<Movie> {
     private long id;
     private String title;
     private Coordinates coordinates;
-    private Date creationDate;
     private int oscarsCount;
     private MovieGenre genre;
     private MpaaRating mpaaRating;
     private Person director;
+    private String ownerLogin;
 
     private Movie() {
     }
 
-    private Movie(long id, String title, int x, Double y, MovieGenre genre, MpaaRating mpaaRating, int oscarsCount, Person director) {
+    private Movie(long id, String title, int x, Double y, MovieGenre genre, MpaaRating mpaaRating, int oscarsCount, Person director, String ownerLogin) {
         setId(id);
         setTitle(title);
         setCoordinates(new Coordinates(x, y));
-        setCreationDate(new Date());
         setGenre(genre);
         setMpaaRating(mpaaRating);
         setOscarsCount(oscarsCount);
         setDirector(director);
-        creationDate = new Date();
+        setOwnerLogin(ownerLogin);
     }
 
     public static class MovieBuilder {
@@ -47,6 +46,7 @@ public class Movie implements Comparable<Movie> {
         private final MovieGenre genre;
         private MpaaRating mpaaRating;
         private Person director;
+        private String ownerLogin;
 
         public MovieBuilder(long id, String title, Coordinates coordinates, MovieGenre genre, int oscarsCount) {
             this.id = id;
@@ -76,8 +76,13 @@ public class Movie implements Comparable<Movie> {
             return this;
         }
 
+        public MovieBuilder setOwnerLogin(String login) {
+            this.ownerLogin = login;
+            return this;
+        }
+
         public Movie build() {
-            return new Movie(this.id, this.title, this.coordinates.getX(), this.coordinates.getY(), this.genre, this.mpaaRating, this.oscarsCount, this.director);
+            return new Movie(this.id, this.title, this.coordinates.getX(), this.coordinates.getY(), this.genre, this.mpaaRating, this.oscarsCount, this.director, this.ownerLogin);
         }
     }
 
@@ -110,12 +115,12 @@ public class Movie implements Comparable<Movie> {
         this.coordinates = coordinates;
     }
 
-    public Date getCreationDate() {
-        return creationDate;
+    public void setOwnerLogin(String ownerLogin) {
+        this.ownerLogin = ownerLogin;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public String getOwnerLogin() {
+        return ownerLogin;
     }
 
     @XmlElement
@@ -187,7 +192,7 @@ public class Movie implements Comparable<Movie> {
                 builder.append(" ").append(director.getBirthday());
             }
         }
-        builder.append("    ").append(creationDate);
+        builder.append("    ").append(ownerLogin);
         return builder.toString();
     }
 

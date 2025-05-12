@@ -1,6 +1,9 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
+import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.Role;
 
 import java.nio.channels.SelectionKey;
 
@@ -14,7 +17,10 @@ public class ClearCommand extends Command {
 
     @Override
     public String execute(String argument, SelectionKey key) {
-        movies.clear();
+        AuthClientContext context = (AuthClientContext) key.attachment();
+        movies.getCollection()
+                .removeIf(movie -> getAccessLevel().hasAccess(Role.ADMIN) ||
+                movie.getOwnerLogin().equals(context.getUser().getLogin()));
         return "Коллекция очищена";
     }
 

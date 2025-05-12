@@ -1,5 +1,7 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
+import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.Role;
 
 import java.nio.channels.SelectionKey;
@@ -19,11 +21,20 @@ public class HelpCommand extends Command {
 
     @Override
     public String execute(String argument, SelectionKey key) {
+        ClientContext context = (ClientContext) key.attachment();
         StringBuilder result = new StringBuilder();
         List<String> commandList = new ArrayList<>();
         result.append("Доступные команды: ").append("\n");
         for (Command command : commandMap.values()) {
-            commandList.add(command.description());
+            if (context.isAuthenticated() &&
+                    (command.getName().equalsIgnoreCase("login") ||
+                    command.getName().equalsIgnoreCase("register"))) {
+                continue;
+            }
+
+            if (context.getRole().hasAccess(command.getAccessLevel())) {
+                commandList.add(command.description());
+            }
         }
         Collections.sort(commandList);
         for (String description : commandList) {

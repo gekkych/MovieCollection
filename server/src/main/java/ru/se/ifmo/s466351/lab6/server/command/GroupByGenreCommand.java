@@ -2,6 +2,8 @@ package ru.se.ifmo.s466351.lab6.server.command;
 
 
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.Role;
 
 import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
@@ -16,11 +18,17 @@ public class GroupByGenreCommand extends Command {
 
     @Override
     public String execute(String argument, SelectionKey key) {
+        AuthClientContext context = (AuthClientContext) key.attachment();
         ArrayList<String> actionFilms = new ArrayList<>();
         ArrayList<String> comedyFilms = new ArrayList<>();
         ArrayList<String> scifiFilms = new ArrayList<>();
         StringBuilder result = new StringBuilder();
-        movies.getCollection().stream().filter(m -> m.getGenre() != null).forEach(movie -> {
+        movies.getCollection()
+                .stream()
+                .filter(movie -> context.getRole().hasAccess(Role.ADMIN) ||
+                        movie.getOwnerLogin().equals(context.getUser().getLogin()))
+                .filter(m -> m.getGenre() != null)
+                .forEach(movie -> {
             switch (movie.getGenre()) {
                 case ACTION -> actionFilms.add(movie.toString());
                 case COMEDY -> comedyFilms.add(movie.toString());

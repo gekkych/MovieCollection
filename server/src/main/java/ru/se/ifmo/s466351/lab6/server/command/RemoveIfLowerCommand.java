@@ -3,6 +3,8 @@ package ru.se.ifmo.s466351.lab6.server.command;
 import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.collection.movie.Movie;
+import ru.se.ifmo.s466351.lab6.server.user.AuthClientContext;
+import ru.se.ifmo.s466351.lab6.server.user.Role;
 
 import java.nio.channels.SelectionKey;
 import java.util.Iterator;
@@ -18,13 +20,16 @@ public class RemoveIfLowerCommand extends Command implements Receiver<MovieDTO> 
     @Override
     public String execute(String argument, MovieDTO data, SelectionKey key) {
         StringBuilder result = new StringBuilder();
+        AuthClientContext context = (AuthClientContext) key.attachment();
 
         Iterator<Movie> iterator = movies.getCollection().iterator();
         while (iterator.hasNext()) {
             Movie movie = iterator.next();
             if (data.oscarCount() > movie.getOscarsCount()) {
-                result.append("Удалён фильм ").append(movie.getTitle()).append(" с айди ").append(movie.getId());
-                iterator.remove();
+                if (context.getRole().hasAccess(Role.ADMIN) || movie.getOwnerLogin().equals(context.getUser().getLogin())) {
+                    result.append("Удалён фильм ").append(movie.getTitle()).append(" с айди ").append(movie.getId());
+                    iterator.remove();
+                }
             }
         }
         if (result.isEmpty()) {

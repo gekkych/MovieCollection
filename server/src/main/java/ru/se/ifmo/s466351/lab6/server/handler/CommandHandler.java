@@ -52,7 +52,11 @@ public class CommandHandler {
                 return new ServerResponse(ResponseStatus.NEED_MOVIE_DATA, "Введите информацию о фильме");
             }
             if (receiver.getType() == UserDTO.class) {
-                return new ServerResponse(ResponseStatus.NEED_USER_DATA, "Введите данные пользователя.");
+                if (!((ClientContext) key.attachment()).isAuthenticated()) {
+                    return new ServerResponse(ResponseStatus.NEED_USER_DATA, "Введите данные пользователя.");
+                }
+                PendingRequest.remove((SocketChannel) key.channel());
+                return new ServerResponse(ResponseStatus.ERROR, "Пользователь уже авторизован");
             }
             PendingRequest.remove((SocketChannel) key.channel());
             return new ServerResponse(ResponseStatus.ERROR, "Неизвестный тип.");
