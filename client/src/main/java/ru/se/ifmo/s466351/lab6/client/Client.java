@@ -3,6 +3,7 @@ package ru.se.ifmo.s466351.lab6.client;
 import ru.se.ifmo.s466351.lab6.client.exception.CriticalClientException;
 import ru.se.ifmo.s466351.lab6.client.exception.ResponseRouterException;
 import ru.se.ifmo.s466351.lab6.client.handler.*;
+import ru.se.ifmo.s466351.lab6.client.handler.response.ResponseRouter;
 import ru.se.ifmo.s466351.lab6.client.input.CommandRequestInput;
 import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.common.util.Config;
