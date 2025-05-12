@@ -26,8 +26,14 @@ import java.nio.channels.SocketChannel;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 public class Server {
+    private final ExecutorService requestReaderPool = Executors.newFixedThreadPool(4);
+    private final ForkJoinPool requestProcessingPool = new ForkJoinPool();
+    private final ExecutorService responseSenderPool = Executors.newCachedThreadPool();
     private static final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(),"save");
     private static final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(),"users");
     private static UserCollection userCollection;

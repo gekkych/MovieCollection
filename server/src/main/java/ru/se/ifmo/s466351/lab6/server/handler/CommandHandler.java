@@ -36,7 +36,7 @@ public class CommandHandler {
 
         ClientContext context = (ClientContext) key.attachment();
         if (!context.getRole().hasAccess(command.getAccessLevel())) {
-            return new ServerResponse(ResponseStatus.ERROR, "Нет доступа к команде");
+            return new ServerResponse(ResponseStatus.NO_ACCESS, "Нет доступа к команде");
         }
 
         if (command instanceof Closable) {

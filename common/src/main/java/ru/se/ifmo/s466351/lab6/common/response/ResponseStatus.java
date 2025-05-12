@@ -4,5 +4,6 @@ public enum ResponseStatus {
     OK,
     ERROR,
     NEED_MOVIE_DATA,
-    NEED_USER_DATA
+    NEED_USER_DATA,
+    NO_ACCESS
 }

@@ -15,6 +15,7 @@ public class ResponseRouter {
            handlers.put(ResponseStatus.ERROR, new ErrorResponseHandler());
            handlers.put(ResponseStatus.NEED_MOVIE_DATA, new NeedMovieDataResponseHandler());
            handlers.put(ResponseStatus.NEED_USER_DATA, new NeedUserDataResponseHandler());
+           handlers.put(ResponseStatus.NO_ACCESS, new NoAccessResponseHandler());
     }
 
     public static Request route(ServerResponse response) {
