@@ -4,7 +4,6 @@ import ru.se.ifmo.s466351.lab6.common.request.*;
 import ru.se.ifmo.s466351.lab6.common.response.ResponseStatus;
 import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
-import ru.se.ifmo.s466351.lab6.server.user.ActiveConnection;
 import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 

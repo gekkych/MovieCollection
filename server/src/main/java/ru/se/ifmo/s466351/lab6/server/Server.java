@@ -5,8 +5,10 @@ import ru.se.ifmo.s466351.lab6.common.response.ServerResponse;
 import ru.se.ifmo.s466351.lab6.common.util.Config;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
-import ru.se.ifmo.s466351.lab6.server.exception.MovieDequeException;
-import ru.se.ifmo.s466351.lab6.server.handler.*;
+import ru.se.ifmo.s466351.lab6.server.handler.ConnectionHandler;
+import ru.se.ifmo.s466351.lab6.server.handler.ReadHandler;
+import ru.se.ifmo.s466351.lab6.server.handler.RequestRouter;
+import ru.se.ifmo.s466351.lab6.server.handler.WriteHandler;
 import ru.se.ifmo.s466351.lab6.server.save.MovieDequeXmlSerializer;
 import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.save.UserCollectionXmlSerializer;
@@ -14,135 +16,110 @@ import ru.se.ifmo.s466351.lab6.server.user.ActiveConnection;
 import ru.se.ifmo.s466351.lab6.server.user.ClientContext;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
 
 public class Server {
     private final ExecutorService requestReaderPool = Executors.newFixedThreadPool(4);
     private final ForkJoinPool requestProcessingPool = new ForkJoinPool();
     private final ExecutorService responseSenderPool = Executors.newCachedThreadPool();
-    private static final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(),"save");
-    private static final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(),"users");
-    private static UserCollection userCollection;
-    private static final ActiveConnection connection = new ActiveConnection();
 
+    private final MovieDeque movieDeque = new MovieDeque();
+    private final UserCollection userCollection = new UserCollection();
+    private final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(), "movie");
+    private final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(), "user");
+    private final ActiveConnection activeConnection = new ActiveConnection();
+    private final CommandManager commandManager = new CommandManager(movieDeque, movieSaveManager, userSaveManager, activeConnection, userCollection);
+    private final RequestRouter requestRouter = new RequestRouter(commandManager, userCollection);
 
     public static void main(String[] args) throws IOException {
-        MovieDeque movies;
-        try {
-            movies = movieSaveManager.load();
-            userCollection = userSaveManager.load();
-        } catch (MovieDequeException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
+        Config config = new Config(Paths.get("config"));
+        new Server().start(config.getPort());
+    }
 
-        CommandManager commandManager = new CommandManager(movies, movieSaveManager, userSaveManager, connection, userCollection);
+    public void start(int port) {
         commandManager.initialize();
-        RequestRouter requestRouter = new RequestRouter(commandManager, new UserCollection());
-        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-        Config config = new Config(Paths.get("config.properties"));
-        try (ServerSocketChannel serverChannel = ServerSocketChannel.open(); Selector selector = Selector.open()) {
 
-            serverChannel.configureBlocking(false);
-            serverChannel.bind(new InetSocketAddress(config.getHost(), config.getPort()));
+        try (Selector selector = Selector.open();
+             ServerSocketChannel serverSocket = ServerSocketChannel.open()) {
 
-            System.out.println("Сервер ждёт подключений");
-            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            serverSocket.bind(new InetSocketAddress(port));
+            serverSocket.configureBlocking(false);
+            serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+
+            System.out.println("Сервер запущен на порту: " + port);
 
             while (true) {
-                selector.select(50);
-                if (consoleReader.ready()) {
-                    String input = consoleReader.readLine().trim();
-                    if ("save".equalsIgnoreCase(input)) {
-                        System.out.println(commandManager.getCommand("save").execute(null, null));
-                    } else if ("exit".equalsIgnoreCase(input)) {
-                        shutdown(commandManager, selector, serverChannel);
-                        return;
-                    }
-                }
+                selector.select();
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iterator = selectedKeys.iterator();
 
                 while (iterator.hasNext()) {
                     SelectionKey key = iterator.next();
                     iterator.remove();
+
                     try {
-                        if (!key.isValid()) {
-                            continue;
-                        }
                         if (key.isAcceptable()) {
-                            ConnectionHandler.acceptClient(serverChannel, selector);
+                            acceptConnection(serverSocket, selector);
                         } else if (key.isReadable()) {
-                            SocketChannel clientChannel = (SocketChannel) key.channel();
-                            ClientContext context = (ClientContext) key.attachment();
-                            ByteBuffer buffer = context.getReadBuffer();
-
-                            Request request = ReadHandler.read(key, buffer);
-                            ServerResponse response = requestRouter.route(request, key);
-
-                            if (request != null) {
-                                context = (ClientContext) key.attachment();
-                                context.setCurrentRequest(request);
-                                context.setLastResponse(response);
-
-                                if (key.isValid()) {
-                                    key.interestOps(SelectionKey.OP_WRITE);
-                                }
-                            } else {
-                                key.cancel();
-                                clientChannel.close();
-                            }
-                        } else if (key.isWritable()) {
-                            ClientContext context = (ClientContext) key.attachment();
-                            WriteHandler.send(key, context.getLastResponse(), context.getWriteBuffer());
-                            key.interestOps(SelectionKey.OP_READ);
+                            requestReaderPool.submit(() -> readRequest(key));
                         }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
+                        System.err.println("Ошибка при обработке ключа: " + e.getMessage());
                         key.cancel();
                         try {
                             key.channel().close();
-                        } catch (IOException ex) {
-
-                        }
+                        } catch (IOException ignored) {}
                     }
                 }
             }
+
+        } catch (IOException e) {
+            System.err.println("Ошибка при запуске сервера: " + e.getMessage());
         }
     }
 
-    private static void shutdown(CommandManager commandManager, Selector selector, ServerSocketChannel serverChannel) {
+    private void acceptConnection(ServerSocketChannel serverSocket, Selector selector) throws IOException {
+        ConnectionHandler.acceptClient(serverSocket, selector);
+        serverSocket.register(selector, SelectionKey.OP_READ);
+    }
+
+    private void readRequest(SelectionKey key) {
         try {
-            System.out.println(commandManager.getCommand("save").execute(null, null));
-            userSaveManager.save(userCollection);
-
-            for (SelectionKey key : selector.keys()) {
-                try {
-                    key.channel().close();
-                } catch (IOException e) {
-                    System.out.println("Ошибка при закрытии канала: " + e.getMessage());
-                }
+            ClientContext context = (ClientContext) key.attachment();
+            Request request = ReadHandler.read(key, context.getReadBuffer());
+            if (request != null) {
+                processRequestAsync(request, key, context);
             }
-
-            selector.close();
-            serverChannel.close();
-
-            System.out.println("Все ресурсы закрыты. Сервер завершил работу.");
-        } catch (IOException e) {
-            System.out.println("Ошибка при завершении сервера: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Ошибка чтения: " + e.getMessage());
         }
+    }
+
+    private void processRequestAsync(Request request, SelectionKey key, ClientContext context) {
+        requestProcessingPool.submit(() -> {
+            try {
+                ServerResponse response = requestRouter.route(request, key);
+                sendResponseAsync(response, key, context);
+            } catch (Exception e) {
+                System.err.println("Ошибка обработки: " + e.getMessage());
+            }
+        });
+    }
+
+    private void sendResponseAsync(ServerResponse response, SelectionKey key, ClientContext context) {
+        responseSenderPool.submit(() -> {
+            try {
+                WriteHandler.send(key, response, context.getWriteBuffer());
+                key.interestOps(SelectionKey.OP_READ);
+            } catch (IOException e) {
+                System.err.println("Ошибка отправки: " + e.getMessage());
+            }
+        });
     }
 }

@@ -1,6 +1,5 @@
 package ru.se.ifmo.s466351.lab6.server.collection.movie;
 
-import ru.se.ifmo.s466351.lab6.common.dto.MovieDTO;
 import ru.se.ifmo.s466351.lab6.common.dto.MovieGenre;
 import ru.se.ifmo.s466351.lab6.common.dto.MpaaRating;
 import ru.se.ifmo.s466351.lab6.common.util.MovieValidator;
@@ -13,7 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @XmlRootElement
-@XmlType(propOrder = {"id", "title", "genre", "mpaaRating", "director", "oscarsCount", "coordinates", "creationDate"})
+@XmlType(propOrder = {"id", "title", "genre", "mpaaRating", "director", "oscarsCount", "coordinates", "ownerLogin", "creationDate"})
 public class Movie implements Comparable<Movie> {
     private long id;
     private String title;
@@ -23,11 +22,12 @@ public class Movie implements Comparable<Movie> {
     private MovieGenre genre;
     private MpaaRating mpaaRating;
     private Person director;
+    private String ownerLogin;
 
     private Movie() {
     }
 
-    private Movie(long id, String title, int x, Double y, MovieGenre genre, MpaaRating mpaaRating, int oscarsCount, Person director) {
+    private Movie(long id, String title, int x, Double y, MovieGenre genre, MpaaRating mpaaRating, int oscarsCount, Person director, String ownerLogin) {
         setId(id);
         setTitle(title);
         setCoordinates(new Coordinates(x, y));
@@ -36,7 +36,8 @@ public class Movie implements Comparable<Movie> {
         setMpaaRating(mpaaRating);
         setOscarsCount(oscarsCount);
         setDirector(director);
-        creationDate = new Date();
+        setOwnerLogin(ownerLogin);
+        Date creationDate = new Date();
     }
 
     public static class MovieBuilder {
@@ -47,6 +48,7 @@ public class Movie implements Comparable<Movie> {
         private final MovieGenre genre;
         private MpaaRating mpaaRating;
         private Person director;
+        private String ownerLogin;
 
         public MovieBuilder(long id, String title, Coordinates coordinates, MovieGenre genre, int oscarsCount) {
             this.id = id;
@@ -58,6 +60,11 @@ public class Movie implements Comparable<Movie> {
 
         public MovieBuilder setMpaaRating(MpaaRating mpaaRating) {
             this.mpaaRating = mpaaRating;
+            return this;
+        }
+
+        public MovieBuilder setOwnerLogin(String ownerLogin) {
+            this.ownerLogin = ownerLogin;
             return this;
         }
 
@@ -77,7 +84,7 @@ public class Movie implements Comparable<Movie> {
         }
 
         public Movie build() {
-            return new Movie(this.id, this.title, this.coordinates.getX(), this.coordinates.getY(), this.genre, this.mpaaRating, this.oscarsCount, this.director);
+            return new Movie(this.id, this.title, this.coordinates.getX(), this.coordinates.getY(), this.genre, this.mpaaRating, this.oscarsCount, this.director, this.ownerLogin);
         }
     }
 
@@ -157,6 +164,15 @@ public class Movie implements Comparable<Movie> {
         this.director = director;
     }
 
+    @XmlElement
+    public String getOwnerLogin() {
+        return ownerLogin;
+    }
+
+    public void setOwnerLogin(String ownerLogin) {
+        this.ownerLogin = ownerLogin;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -187,7 +203,7 @@ public class Movie implements Comparable<Movie> {
                 builder.append(" ").append(director.getBirthday());
             }
         }
-        builder.append("    ").append(creationDate);
+        builder.append("    ").append(ownerLogin);
         return builder.toString();
     }
 

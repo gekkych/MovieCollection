@@ -21,19 +21,8 @@ public class UpdateCommand extends Command implements Receiver<MovieDTO> {
     public String execute(String argument, MovieDTO data, SelectionKey key) {
         try {
             long id = Long.parseLong(argument);
-            for (Movie movie : movies.getCollection()) {
-                if (movie.getId() == id) {
-                    movie.setTitle(data.title());
-                    movie.setCoordinates(Coordinates.fromDTO(data.coordinates()));
-                    movie.setGenre(data.genre());
-                    movie.setMpaaRating(data.rating());
-                    movie.setOscarsCount(data.oscarCount());
-                    movie.setDirector(Person.fromDTO(data.director()));
-
-                    return "Фильм успешно обновлён";
-                }
-            }
-            return "ID не найден";
+            boolean updated = movies.updateById(id, data);
+            return updated ? "Фильм успешно обновлён" : "ID не найден";
         } catch (NumberFormatException e) {
             throw new InvalidCommandArgumentException("неверный формат id");
         }
