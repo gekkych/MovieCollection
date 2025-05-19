@@ -1,6 +1,6 @@
 package ru.se.ifmo.s466351.lab6.server.save;
 
-import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+import ru.se.ifmo.s466351.lab6.server.user.User;
 import ru.se.ifmo.s466351.lab6.server.user.UserCollection;
 
 import jakarta.xml.bind.JAXBContext;
@@ -35,6 +35,11 @@ public class UserCollectionXmlSerializer implements Serializer<UserCollection>{
             Unmarshaller unmarshaller = context.createUnmarshaller();
 
             StringReader reader = new StringReader(string);
+            UserCollection collection = (UserCollection) unmarshaller.unmarshal(reader);
+            User admin = new User("admin", "0");
+            if (!collection.has(admin)) {
+                collection.add(admin);
+            }
             return (UserCollection) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new RuntimeException("Ошибка десериализации из XML", e);

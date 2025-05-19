@@ -4,4 +4,5 @@ import java.util.Collection;
 
 public interface CollectionWrapper<T> {
     Collection<T> getCollection();
+    boolean has(T element);
 }

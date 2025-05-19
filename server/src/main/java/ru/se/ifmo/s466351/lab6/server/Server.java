@@ -7,6 +7,7 @@ import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
 import ru.se.ifmo.s466351.lab6.server.command.CommandManager;
 import ru.se.ifmo.s466351.lab6.server.exception.MovieDequeException;
 import ru.se.ifmo.s466351.lab6.server.handler.*;
+import ru.se.ifmo.s466351.lab6.server.save.FileManager;
 import ru.se.ifmo.s466351.lab6.server.save.MovieDequeXmlSerializer;
 import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.save.UserCollectionXmlSerializer;
@@ -31,8 +32,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 public class Server {
-    private static final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(),"save");
-    private static final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(),"users");
+    private static final SaveManager<MovieDeque> movieSaveManager = new SaveManager<>(new MovieDequeXmlSerializer(), FileManager.getInstance("movie"));
+    private static final SaveManager<UserCollection> userSaveManager = new SaveManager<>(new UserCollectionXmlSerializer(), FileManager.getInstance("user"));
     private static UserCollection userCollection;
     private static final ActiveConnection connection = new ActiveConnection();
 

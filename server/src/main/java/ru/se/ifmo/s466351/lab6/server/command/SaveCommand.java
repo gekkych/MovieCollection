@@ -1,7 +1,9 @@
 package ru.se.ifmo.s466351.lab6.server.command;
 
+import ru.se.ifmo.s466351.lab6.server.save.FileManager;
 import ru.se.ifmo.s466351.lab6.server.save.SaveManager;
 import ru.se.ifmo.s466351.lab6.server.collection.MovieDeque;
+import ru.se.ifmo.s466351.lab6.server.user.Role;
 
 import java.nio.channels.SelectionKey;
 
@@ -11,6 +13,7 @@ public class SaveCommand extends Command {
 
     public SaveCommand(MovieDeque movies, SaveManager<MovieDeque> saveManager) {
         super("save");
+        setAccessLevel(Role.ADMIN);
         this.movies = movies;
         this.saveManager = saveManager;
     }
@@ -18,7 +21,7 @@ public class SaveCommand extends Command {
     @Override
     public String execute(String argument, SelectionKey key) {
         saveManager.save(movies);
-        return "Коллекция сохранена в файл " + saveManager.getFileManager().getFilePath();
+        return "Коллекция сохранена";
     }
 
     @Override

@@ -26,6 +26,11 @@ public class UserCollection implements CollectionWrapper<User> {
         users.add(user);
     }
 
+    @Override
+    public boolean has(User user) {
+        return users.contains(user);
+    }
+
     public void setUsers(HashSet<User> users) {
         this.users = users;
     }

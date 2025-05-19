@@ -7,33 +7,27 @@ import java.io.*;
 
 
 public class SaveManager<W extends CollectionWrapper<?>> {
-    private final FileManager fileManager;
+    private final Storage storage;
     private final Serializer<W> serializer;
 
-    public SaveManager(Serializer<W> serializer, String fileName) {
+    public SaveManager(Serializer<W> serializer, Storage storage) {
         this.serializer = serializer;
-        this.fileManager = FileManager.getInstance(fileName);
+        this.storage = storage;
     }
 
-    public void save(W wrapper) {
-        try {
-            String data = serializer.serialize(wrapper);
-            fileManager.save(data);
-        } catch (IOException e) {
-            throw new CommandException("Ошибка сохранения: " + e.getMessage());
-        }
+    public void save(W wrapper) throws MovieDequeException {
+        String data = serializer.serialize(wrapper);
+        storage.save(data);
     }
 
     public W load() {
-        try {
-            String data = fileManager.load();
-            return serializer.deserialize(data);
-        } catch (IOException e) {
-            throw new MovieDequeException("Ошибка загрузки: " + e.getMessage());
-        }
+
+        String data = storage.load();
+        return serializer.deserialize(data);
+
     }
 
-    public FileManager getFileManager() {
-        return fileManager;
+    public Storage getStorage() {
+        return storage;
     }
 }

@@ -48,6 +48,10 @@ public class MovieDeque implements CollectionWrapper<Movie> {
         return movies.stream().filter(movie -> movie.getId() == id).findFirst().orElse(null);
     }
 
+    public boolean has(Movie movie) {
+        return movies.contains(movie);
+    }
+
     public void manageDeque() {
         idGenerator.validateId(movies);
         sortMovieDeque();

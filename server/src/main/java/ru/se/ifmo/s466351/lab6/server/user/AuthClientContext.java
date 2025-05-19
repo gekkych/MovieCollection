@@ -6,7 +6,11 @@ public class AuthClientContext extends ClientContext {
 
     public AuthClientContext(User user) {
         super();
-        setRole(Role.MEMBER);
+        if (user.getLogin().equals("admin")) {
+            setRole(Role.ADMIN);
+        } else {
+            setRole(Role.MEMBER);
+        }
         this.user = user;
         setAuthenticated(true);
     }

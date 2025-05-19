@@ -1,6 +1,7 @@
 package ru.se.ifmo.s466351.lab6.server.save;
 
 import ru.se.ifmo.s466351.lab6.server.exception.CommandException;
+import ru.se.ifmo.s466351.lab6.server.exception.MovieDequeException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-public class FileManager {
+public class FileManager implements Storage {
     private final Path filePath;
     private static final HashMap<String, FileManager> instances = new HashMap<>();
 
@@ -24,12 +25,20 @@ public class FileManager {
         return instances.get(path);
     }
 
-    public void save(String data) throws IOException {
-        Files.writeString(filePath, data);
+    public void save(String data) {
+        try {
+            Files.writeString(filePath, data);
+        } catch (IOException e) {
+            throw new CommandException("Ошибка сохранения: " + e.getMessage());
+        }
     }
 
-    public String load() throws IOException {
-        return Files.readString(filePath);
+    public String load() {
+        try {
+            return Files.readString(filePath);
+        } catch (IOException e) {
+            throw new MovieDequeException("Ошибка загрузки: " + e.getMessage());
+        }
     }
 
     public boolean exists() {
