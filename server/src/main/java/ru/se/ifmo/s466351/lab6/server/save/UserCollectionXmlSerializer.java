@@ -30,7 +30,11 @@ public class UserCollectionXmlSerializer implements Serializer<UserCollection>{
     @Override
     public UserCollection deserialize(String string) {
         try {
-            if (string == null || string.isEmpty()) return new UserCollection();
+            if (string == null || string.isEmpty()) {
+                UserCollection userCollection = new UserCollection();
+                userCollection.add(new User("admin", "0"));
+                return userCollection;
+            }
             JAXBContext context = JAXBContext.newInstance(UserCollection.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
 

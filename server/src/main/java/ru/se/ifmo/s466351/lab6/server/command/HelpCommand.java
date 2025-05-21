@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HelpCommand extends Command {
     private final HashMap<String, Command> commandMap;
@@ -22,25 +23,16 @@ public class HelpCommand extends Command {
     @Override
     public String execute(String argument, SelectionKey key) {
         ClientContext context = (ClientContext) key.attachment();
-        StringBuilder result = new StringBuilder();
-        List<String> commandList = new ArrayList<>();
-        result.append("Доступные команды: ").append("\n");
-        for (Command command : commandMap.values()) {
-            if (context.isAuthenticated() &&
-                    (command.getName().equalsIgnoreCase("login") ||
-                    command.getName().equalsIgnoreCase("register"))) {
-                continue;
-            }
-
-            if (context.getRole().hasAccess(command.getAccessLevel())) {
-                commandList.add(command.description());
-            }
-        }
-        Collections.sort(commandList);
-        for (String description : commandList) {
-            result.append(description).append("\n");
-        }
-        return result.toString();
+        return commandMap.values().stream()
+                .filter(command ->
+                        !context.isAuthenticated() ||
+                        (!command.getName().equalsIgnoreCase("login") &&
+                        !command.getName().equalsIgnoreCase("register"))
+                )
+                .filter(command -> context.getRole().hasAccess(command.getAccessLevel()))
+                .map(Command::description)
+                .sorted(String::compareToIgnoreCase)
+                .collect(Collectors.joining("\n"));
     }
 
     @Override

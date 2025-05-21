@@ -48,7 +48,7 @@ public class Server {
             return;
         }
 
-        CommandManager commandManager = new CommandManager(movies, movieSaveManager, userSaveManager, connection, userCollection);
+        CommandManager commandManager = new CommandManager(movies, movieSaveManager, connection, userCollection);
         commandManager.initialize();
         RequestRouter requestRouter = new RequestRouter(commandManager, new UserCollection());
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
@@ -78,6 +78,7 @@ public class Server {
                 while (iterator.hasNext()) {
                     SelectionKey key = iterator.next();
                     iterator.remove();
+                    System.out.println(selectedKeys);
                     try {
                         if (!key.isValid()) {
                             continue;

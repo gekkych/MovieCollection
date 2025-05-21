@@ -10,7 +10,6 @@ import java.util.HashMap;
 public class CommandManager {
     private final MovieDeque movies;
     private final SaveManager<MovieDeque> movieSaveManager;
-    private final SaveManager<UserCollection> userSaveManager;
     private final HashMap<String, Command> commands;
     private final ActiveConnection connection;
     private final UserCollection userCollection;
@@ -18,12 +17,10 @@ public class CommandManager {
 
     public CommandManager(MovieDeque movies,
                           SaveManager<MovieDeque> movieSaveManager,
-                          SaveManager<UserCollection> userSaveManager,
                           ActiveConnection connection,
                           UserCollection userCollection) {
         this.movies = movies;
         this.movieSaveManager = movieSaveManager;
-        this.userSaveManager = userSaveManager;
         this.connection = connection;
         this.userCollection = userCollection;
         this.commands = new HashMap<>();
